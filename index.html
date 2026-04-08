@@ -27,64 +27,49 @@ header h1{font-size:15px;font-weight:500}
 .kpi-sub{font-size:10px;color:#aaa;margin-top:2px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .card{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:14px 16px}
-.card h2{font-size:12px;font-weight:500;margin-bottom:10px;color:#555}
+.card h2{font-size:12px;font-weight:500;margin-bottom:4px;color:#555}
+.chart-range{font-size:10px;color:#aaa;margin-bottom:10px}
 .bar-wrap{display:flex;flex-direction:column;gap:7px}
 .bar-row{display:flex;align-items:center;gap:8px;font-size:12px}
 .bar-label{width:130px;color:#666;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar-track{flex:1;height:7px;background:#f0efe8;border-radius:4px;overflow:hidden}
 .bar-fill{height:100%;border-radius:4px;transition:width .5s}
 .bar-count{color:#888;font-size:11px;min-width:24px;text-align:right}
-</style>
-</head>
-<style>
 .tabs{display:flex;gap:4px;margin-bottom:14px}
 .tab{font-size:12px;padding:5px 13px;border-radius:20px;border:0.5px solid #d0cec8;background:#fff;cursor:pointer;color:#666;font-family:inherit}
 .tab.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
 .view{display:none}.view.active{display:block}
-/* ── Search bar ── */
-.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap{position:relative;margin-bottom:10px}
 .search-wrap input{width:100%;font-size:13px;padding:8px 12px 8px 34px;border:0.5px solid #d0cec8;border-radius:8px;outline:none;font-family:inherit;background:#fff}
 .search-wrap input:focus{border-color:#7F77DD;box-shadow:0 0 0 3px rgba(127,119,221,.1)}
 .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px;pointer-events:none}
-.search-meta{font-size:11px;color:#888;margin-top:6px;margin-bottom:10px}
-.search-meta strong{color:#534AB7}
-/* ── Filter chips ── */
+.search-meta{font-size:11px;color:#888;margin-bottom:8px;min-height:16px}
 .fc{font-size:11px;padding:3px 9px;border-radius:20px;border:0.5px solid #d0cec8;background:#fafaf7;cursor:pointer;color:#555;display:inline-block;margin:0 4px 6px 0}
 .fc.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
-/* ── Ticket table ── */
 .full-card{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;margin-bottom:14px}
 .full-card-hdr{font-size:12px;font-weight:500;color:#555;padding:10px 14px;border-bottom:0.5px solid #e0ded6;display:flex;align-items:center;justify-content:space-between}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{text-align:left;font-size:10px;font-weight:500;color:#888;padding:7px 10px;border-bottom:0.5px solid #e0ded6;background:#fafaf7;text-transform:uppercase;letter-spacing:.3px}
 td{padding:7px 10px;border-bottom:0.5px solid #f0efe8;vertical-align:top}
 tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
-tr:last-child td{border-bottom:none}
 .t-subj{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.t-notes-snippet{max-width:180px;font-size:11px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-notes-snippet{max-width:160px;font-size:11px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
 .pill{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
-.p-open{background:#E6F1FB;color:#185FA5}
-.p-prog{background:#EEEDFE;color:#534AB7}
-.p-hold{background:#FAEEDA;color:#854F0B}
-.p-res{background:#EAF3DE;color:#3B6D11}
-.p-closed{background:#f0efe8;color:#666}
-.p-high{background:#FCEBEB;color:#A32D2D}
-.p-med{background:#E6F1FB;color:#185FA5}
-.p-low{background:#f0efe8;color:#666}
-/* ── Expandable detail row ── */
+.p-open{background:#E6F1FB;color:#185FA5}.p-prog{background:#EEEDFE;color:#534AB7}
+.p-hold{background:#FAEEDA;color:#854F0B}.p-res{background:#EAF3DE;color:#3B6D11}
+.p-closed{background:#f0efe8;color:#666}.p-high{background:#FCEBEB;color:#A32D2D}
+.p-med{background:#E6F1FB;color:#185FA5}.p-low{background:#f0efe8;color:#666}
 .detail-row td{padding:0;border-bottom:0.5px solid #e0ded6}
 .detail-row.hidden{display:none}
 .detail-box{background:#fafaf7;padding:12px 14px;border-left:3px solid #7F77DD}
 .detail-box h4{font-size:11px;font-weight:500;color:#534AB7;margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
 .detail-box p{font-size:12px;color:#444;line-height:1.65;white-space:pre-wrap;word-break:break-word}
-.detail-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.detail-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .detail-note{background:#fff;border:0.5px solid #e0ded6;border-radius:8px;padding:10px 12px;margin-top:8px}
 .detail-note-meta{font-size:11px;color:#888;margin-bottom:4px}
 .detail-note-body{font-size:12px;color:#1a1a18;line-height:1.6;white-space:pre-wrap;word-break:break-word}
-.notes-loading{font-size:12px;color:#888;padding:8px 0;display:flex;align-items:center;gap:6px}
 .notes-empty{font-size:12px;color:#aaa;padding:6px 0;font-style:italic}
-.load-notes-btn{font-size:11px;padding:2px 8px;border:0.5px solid #7F77DD;border-radius:6px;background:#EEEDFE;color:#534AB7;cursor:pointer;font-family:inherit;margin-left:6px}
-.load-notes-btn:hover{background:#d8d6fe}
-/* ── Chat ── */
+.load-notes-btn{font-size:11px;padding:2px 8px;border:0.5px solid #7F77DD;border-radius:6px;background:#EEEDFE;color:#534AB7;cursor:pointer;font-family:inherit;margin-left:4px}
 .chat-box{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;margin-bottom:14px}
 .chat-hdr{font-size:12px;font-weight:500;color:#555;padding:10px 14px;border-bottom:0.5px solid #e0ded6;display:flex;align-items:center;gap:8px}
 .ai-tag{background:#EEEDFE;color:#534AB7;font-size:10px;padding:2px 7px;border-radius:10px}
@@ -101,45 +86,42 @@ tr:last-child td{border-bottom:none}
 .sug:hover{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
 .spinner{display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#7F77DD;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
 @keyframes spin{to{transform:rotate(360deg)}}
-/* ── Refresh bar ── */
 .refresh-bar{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .refresh-info{font-size:12px;color:#666}
 .refresh-info strong{color:#1a1a18;font-weight:500}
 .countdown{font-size:11px;color:#888;margin-top:2px}
-/* ── New alert ── */
 .new-tickets{background:#EAF3DE;border:0.5px solid #9FE1CB;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:none}
 .new-tickets h3{font-size:12px;font-weight:500;color:#085041;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .new-dot{width:8px;height:8px;background:#3B6D11;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-/* ── Setup modal ── */
 .setup-modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:999}
 .setup-card{background:#fff;border-radius:12px;padding:24px;max-width:420px;width:90%;box-shadow:0 4px 24px rgba(0,0,0,.12)}
 .setup-card h2{font-size:15px;font-weight:500;margin-bottom:8px}
 .setup-card p{font-size:13px;color:#666;line-height:1.6;margin-bottom:14px}
 .setup-card input{width:100%;font-size:13px;padding:8px 11px;border:0.5px solid #d0cec8;border-radius:8px;outline:none;font-family:inherit;margin-bottom:10px}
 .setup-card input:focus{border-color:#7F77DD}
-.setup-card .row{display:flex;gap:8px}
-.interval-select{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.int-opt{font-size:12px;padding:4px 12px;border-radius:20px;border:0.5px solid #d0cec8;background:#fafaf7;cursor:pointer;color:#555}
+.int-opt{font-size:12px;padding:4px 12px;border-radius:20px;border:0.5px solid #d0cec8;background:#fafaf7;cursor:pointer;color:#555;display:inline-block;margin:0 4px 4px 0}
 .int-opt.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
-.toast{position:fixed;bottom:20px;right:20px;background:#3B6D11;color:#fff;font-size:12px;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;max-width:300px}
+.toast{position:fixed;bottom:20px;right:20px;background:#3B6D11;color:#fff;font-size:12px;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
 @media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.hdr-right{width:100%}.detail-cols{grid-template-columns:1fr}}
 </style>
+</head>
 <body>
+<!-- Setup Modal -->
 <div class="setup-modal" id="setupModal">
   <div class="setup-card">
     <h2>Setup - Help Desk Dashboard</h2>
     <p>Enter your <strong>Anthropic API key</strong> for AI Q&amp;A and auto-refresh. Stored only in your browser — never sent to GitHub.</p>
-    <input type="password" id="apiKeyInput" placeholder="sk-ant-..." />
-    <p style="font-size:12px;color:#888;margin-bottom:10px">Auto-refresh interval:</p>
-    <div class="interval-select" id="intervalSelect">
+    <input type="password" id="apiKeyInput" placeholder="sk-ant-..."/>
+    <p style="font-size:12px;color:#888;margin-bottom:8px">Auto-refresh interval:</p>
+    <div id="intervalSelect" style="margin-bottom:14px">
       <span class="int-opt" data-val="5">5 min</span>
       <span class="int-opt active" data-val="15">15 min</span>
       <span class="int-opt" data-val="30">30 min</span>
       <span class="int-opt" data-val="60">60 min</span>
     </div>
-    <div class="row">
+    <div style="display:flex;gap:8px">
       <button class="btn btn-primary" style="flex:1" onclick="saveSetup()">Save &amp; Start</button>
       <button class="btn" onclick="skipSetup()">Skip (read-only)</button>
     </div>
@@ -162,15 +144,15 @@ tr:last-child td{border-bottom:none}
 <div class="main">
   <div class="refresh-bar">
     <div>
-      <div class="refresh-info">Auto-refresh: <strong id="refreshStatus">Use "Refresh from Help Desk" button — no key needed</strong></div>
+      <div class="refresh-info">Auto-refresh: <strong id="refreshStatus">Click "Refresh from Help Desk" — no API key needed</strong></div>
       <div class="countdown" id="countdown"></div>
     </div>
-    <div style="display:flex;gap:6px;align-items:center">
-      <span style="font-size:11px;color:#888">Interval:</span>
-      <span class="int-opt active" data-val="5" onclick="changeInterval(5,this)" style="margin:0">5m</span>
-      <span class="int-opt" data-val="15" onclick="changeInterval(15,this)" style="margin:0">15m</span>
-      <span class="int-opt" data-val="30" onclick="changeInterval(30,this)" style="margin:0">30m</span>
-      <span class="int-opt" data-val="60" onclick="changeInterval(60,this)" style="margin:0">60m</span>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:11px;color:#888">AI Interval:</span>
+      <span class="int-opt active" data-val="5" onclick="changeInterval(5,this)">5m</span>
+      <span class="int-opt" data-val="15" onclick="changeInterval(15,this)">15m</span>
+      <span class="int-opt" data-val="30" onclick="changeInterval(30,this)">30m</span>
+      <span class="int-opt" data-val="60" onclick="changeInterval(60,this)">60m</span>
     </div>
   </div>
   <div class="new-tickets" id="newTicketsAlert">
@@ -182,32 +164,30 @@ tr:last-child td{border-bottom:none}
     <button class="tab" onclick="switchTab('tickets',this)">All Tickets</button>
     <button class="tab" onclick="switchTab('ai',this)">Ask AI ↗</button>
   </div>
-  <!-- Overview tab -->
+  <!-- Overview -->
   <div id="tab-overview" class="view active">
     <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-label">Total Tickets</div><div class="kpi-val" id="kpiTotal">2,314</div><div class="kpi-sub">All time</div></div>
+      <div class="kpi"><div class="kpi-label">Total Tickets</div><div class="kpi-val" id="kpiTotal">-</div><div class="kpi-sub">All time</div></div>
       <div class="kpi"><div class="kpi-label">Open / In Progress</div><div class="kpi-val" id="kpiOpen">-</div><div class="kpi-sub">Last 30 days</div></div>
       <div class="kpi"><div class="kpi-label">Resolved</div><div class="kpi-val" id="kpiResolved">-</div><div class="kpi-sub">Last 30 days</div></div>
       <div class="kpi"><div class="kpi-label">High Priority Open</div><div class="kpi-val" id="kpiHigh">-</div><div class="kpi-sub">Last 30 days</div></div>
     </div>
     <div class="row2">
-      <div class="card"><h2>Status breakdown</h2><div class="bar-wrap" id="statusBars"></div></div>
-      <div class="card"><h2>Assignee workload</h2><div class="bar-wrap" id="assignBars"></div></div>
+      <div class="card"><h2>Status breakdown</h2><div class="chart-range" id="rangeLabel"></div><div class="bar-wrap" id="statusBars"></div></div>
+      <div class="card"><h2>Assignee workload</h2><div class="chart-range" id="rangeLabel2"></div><div class="bar-wrap" id="assignBars"></div></div>
     </div>
     <div class="row2">
-      <div class="card"><h2>Category mix</h2><div class="bar-wrap" id="catBars"></div></div>
-      <div class="card"><h2>Priority breakdown</h2><div class="bar-wrap" id="priBars"></div></div>
+      <div class="card"><h2>Category mix</h2><div class="chart-range" id="rangeLabel3"></div><div class="bar-wrap" id="catBars"></div></div>
+      <div class="card"><h2>Priority breakdown</h2><div class="chart-range" id="rangeLabel4"></div><div class="bar-wrap" id="priBars"></div></div>
     </div>
   </div>
-  <!-- Tickets tab -->
+  <!-- Tickets -->
   <div id="tab-tickets" class="view">
-    <!-- Search bar -->
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
-      <input type="text" id="searchInput" placeholder="Search by subject, requester, assignee, status, category, or notes..." oninput="onSearch()"/>
+      <input type="text" id="searchInput" placeholder="Search subject, requester, assignee, status, category, notes..." oninput="onSearch()"/>
     </div>
     <div class="search-meta" id="searchMeta"></div>
-    <!-- Filter chips -->
     <div style="margin-bottom:10px">
       <span class="fc active" data-f="all" onclick="filterTix(this)">All</span>
       <span class="fc" data-f="open" onclick="filterTix(this)">Open</span>
@@ -217,31 +197,24 @@ tr:last-child td{border-bottom:none}
       <span class="fc" data-f="high" onclick="filterTix(this)">High Priority</span>
     </div>
     <div class="full-card">
-      <div class="full-card-hdr">
-        <span>Tickets</span>
-        <span style="font-weight:400;color:#aaa;font-size:11px" id="tixRange"></span>
-      </div>
+      <div class="full-card-hdr"><span>Tickets</span><span style="font-weight:400;color:#aaa;font-size:11px" id="tixRange"></span></div>
       <div style="overflow-x:auto"><table>
-        <thead><tr>
-          <th>ID</th><th>Category</th><th>Subject</th><th>Requester</th>
-          <th>Assigned To</th><th>Status</th><th>Priority</th>
-          <th>Notes</th><th>Created</th><th>Due By</th>
-        </tr></thead>
+        <thead><tr><th>ID</th><th>Category</th><th>Subject</th><th>Requester</th><th>Assigned To</th><th>Status</th><th>Priority</th><th>Notes</th><th>Created</th><th>Due By</th></tr></thead>
         <tbody id="tixBody"></tbody>
       </table></div>
     </div>
   </div>
-  <!-- AI tab -->
+  <!-- AI -->
   <div id="tab-ai" class="view">
     <div class="chat-box">
       <div class="chat-hdr">AI Analyst <span class="ai-tag">Claude</span></div>
       <div class="chat-msgs" id="chatMsgs">
-        <div class="msg msg-a">Hi Ron — tickets are loaded. Ask me anything about the queue, workloads, Infor issues, overdue items, or patterns. Notes are searchable too once loaded.</div>
+        <div class="msg msg-a">Hi Ron — tickets loaded. Ask me anything about the queue, workloads, Infor issues, overdue items, or patterns.</div>
       </div>
       <div class="sugs">
         <span class="sug" onclick="ask(this.textContent)">Who has the most open tickets?</span>
         <span class="sug" onclick="ask(this.textContent)">What High priority items are open?</span>
-        <span class="sug" onclick="ask(this.textContent)">Show all Infor-related tickets</span>
+        <span class="sug" onclick="ask(this.textContent)">Show Infor-related tickets</span>
         <span class="sug" onclick="ask(this.textContent)">Which tickets are overdue?</span>
         <span class="sug" onclick="ask(this.textContent)">Summarize Khoi Dinh's queue</span>
         <span class="sug" onclick="ask(this.textContent)">What printer issues are open?</span>
@@ -254,21 +227,21 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 <script>
-const HD='https://helpdesk.smalley.com';
-let TICKETS=[],activeFilter='all',searchQuery='',apiKey='',intervalMin=15;
-let refreshTimer=null,countdownTimer=null,nextRefreshAt=null;
-let openDetailRow=null;
-let totalTicketCount=2314;
+// ── State ─────────────────────────────────────────────────────────────────
+var TICKETS=[], activeFilter='all', searchQuery='', apiKey='', intervalMin=15;
+var refreshTimer=null, countdownTimer=null, nextRefreshAt=null;
+var openDetailRow=null, totalTicketCount=2314;
+var HD='https://helpdesk.smalley.com';
 
-const SEED=[
+var SEED=[
 {id:'69534',cat:'Request',subj:'Addition to PRD Environment - BOL Tracked Not Invoiced Email',req:'Keith Schaecher',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 11:17 AM',due:'-',pri:'Medium',desc:'',notes:[]},
 {id:'69533',cat:'Request',subj:'ESF-12 IT Support - Crocker',req:'Abby Gay',asgn:'Tatyana Herrera',status:'Open - In Progress',created:'Apr 8, 2026 11:02 AM',due:'Apr 13, 2026',pri:'Medium',desc:'',notes:[]},
-{id:'69532',cat:'Incident',subj:'Infor Request',req:'Jody Tennyson',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 10:14 AM',due:'Apr 9, 2026',pri:'High',desc:'Error on SML MTR creator Material Cert Request for 2 of 5 lot numbers. Corrections applied through MTR Creator but certs still not showing on Infor.',notes:[{by:'Marina Shulman',time:'Apr 8, 2026 12:04 PM',text:'This was noticed, but MTR does not show corrections. Can you please check on your end on MTR?'}]},
+{id:'69532',cat:'Incident',subj:'Infor Request',req:'Jody Tennyson',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 10:14 AM',due:'Apr 9, 2026',pri:'High',desc:'Error on SML MTR creator Material Cert Request.',notes:[{by:'Marina Shulman',time:'Apr 8, 2026 12:04 PM',text:'MTR does not show corrections. Can you please check on your end?'}]},
 {id:'69531',cat:'Incident',subj:'General Request: Certs not showing up in MetalTrace',req:'Jamie Madison',asgn:'Rob Jeanquart',status:'Open',created:'Apr 8, 2026 09:22 AM',due:'-',pri:'High',desc:'',notes:[]},
 {id:'69530',cat:'Request',subj:'Print quality poor',req:'Justin Paulina',asgn:'Khoi Dinh',status:'On Hold - Waiting on Vendor',created:'Apr 8, 2026 08:48 AM',due:'-',pri:'Medium',desc:'',notes:[]},
 {id:'69529',cat:'Email',subj:'ASN Required from Supplier: C4242Y0',req:'Harvey Kost',asgn:'Harvey Kost',status:'Open',created:'Apr 8, 2026 08:33 AM',due:'Apr 13, 2026',pri:'Medium',desc:'',notes:[]},
 {id:'69528',cat:'Request',subj:'RODNEY APONTE INFOR PASSWORD RESET',req:'Rudy Cadena',asgn:'Tatyana Herrera',status:'Resolved',created:'Apr 8, 2026 08:22 AM',due:'-',pri:'Medium',desc:'',notes:[]},
-{id:'69527',cat:'Incident',subj:'Customer Service voicemail +386 820 28598',req:'Debbie Fiegen',asgn:'Todd Rejman',status:'Resolved',created:'Apr 8, 2026 07:42 AM',due:'Apr 15, 2026',pri:'Low',desc:'Customer Service has a new voicemail from +386 820 28598 - 0:49',notes:[{by:'Debbie Fiegen',time:'Apr 8, 2026 09:54 AM',text:'Voicemail received from unknown international number. Duration 0:49. Please review and advise.'}]},
+{id:'69527',cat:'Incident',subj:'Customer Service voicemail +386 820 28598',req:'Debbie Fiegen',asgn:'Todd Rejman',status:'Resolved',created:'Apr 8, 2026 07:42 AM',due:'Apr 15, 2026',pri:'Low',desc:'Customer Service has a new voicemail from +386 820 28598 - 0:49',notes:[{by:'Debbie Fiegen',time:'Apr 8, 2026 09:54 AM',text:'Voicemail from unknown international number, 0:49 duration.'}]},
 {id:'69526',cat:'Incident',subj:'Phone Issue: Add Marketing Member',req:'Lauren Nagys',asgn:'Todd Rejman',status:'Resolved',created:'Apr 8, 2026 07:37 AM',due:'-',pri:'Medium',desc:'',notes:[]},
 {id:'69524',cat:'Break/Fix',subj:'Toner',req:'Daniel Vazquez',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 8, 2026 05:17 AM',due:'-',pri:'Medium',desc:'',notes:[]},
 {id:'69523',cat:'Break/Fix',subj:'Infor form authorization',req:'Marina Shulman',asgn:'Marina Shulman',status:'Resolved',created:'Apr 7, 2026 06:23 PM',due:'Apr 12, 2026',pri:'Medium',desc:'',notes:[]},
@@ -287,437 +260,422 @@ const SEED=[
 {id:'69510',cat:'Request',subj:'Toner replenish PRT 197',req:'Justin Paulina',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 09:30 AM',due:'-',pri:'Medium',desc:'',notes:[]},
 {id:'69509',cat:'Request',subj:'MTR Creator',req:'Jannah Yusuf',asgn:'Zaki Raza',status:'Resolved',created:'Apr 7, 2026 09:27 AM',due:'-',pri:'High',desc:'',notes:[]}
 ];
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function stripHtml(h){var d=document.createElement('div');d.innerHTML=h;return d.textContent||'';}
+function switchTab(name,el){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.getElementById('tab-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+}
+function toast(msg,dur){
+  dur=dur||3500;
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},dur);
+}
+function setBadge(state){
+  var b=document.getElementById('statusBadge');
+  b.className='badge';
+  if(state==='live'){b.classList.add('b-live');b.textContent='● Live';}
+  else if(state==='refreshing'){b.classList.add('b-refreshing');b.innerHTML='<span class="spinner"></span>Refreshing...';}
+  else{b.classList.add('b-error');b.textContent='✕ Error';}
+}
 </script>
 <script>
-// ── Helpers ──────────────────────────────────────────────────────────────
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function stripHtml(h){const d=document.createElement('div');d.innerHTML=h;return d.textContent||'';}
-function switchTab(name,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(el)el.classList.add('active');}
-function toast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
-function setBadge(state){const b=document.getElementById('statusBadge');b.className='badge';if(state==='live'){b.classList.add('b-live');b.textContent='● Live';}else if(state==='refreshing'){b.classList.add('b-refreshing');b.innerHTML='<span class="spinner"></span>Refreshing...';}else{b.classList.add('b-error');b.textContent='✕ Error';}}
+// ── Charts & KPIs ─────────────────────────────────────────────────────────
+var sColor=function(s){return({'Open':'#378ADD','Open - In Progress':'#7F77DD','On Hold - Waiting on Vendor':'#BA7517','Resolved':'#639922','Closed':'#888780'}[s]||'#888780');};
+var cColor=function(c){return({'Request':'#378ADD','Incident':'#E24B4A','Break/Fix':'#BA7517','Email':'#639922'}[c]||'#888780');};
+var pColor=function(p){return({'High':'#E24B4A','Medium':'#378ADD','Low':'#639922'}[p]||'#888780');};
 
-// ── Charts ───────────────────────────────────────────────────────────────
-const sColor=s=>({'Open':'#378ADD','Open - In Progress':'#7F77DD','On Hold - Waiting on Vendor':'#BA7517','Resolved':'#639922','Closed':'#888780'}[s]||'#888780');
-const cColor=c=>({'Request':'#378ADD','Incident':'#E24B4A','Break/Fix':'#BA7517','Email':'#639922'}[c]||'#888780');
-const pColor=p=>({'High':'#E24B4A','Medium':'#378ADD','Low':'#639922'}[p]||'#888780');
-function count(arr,key){const m={};arr.forEach(t=>{const v=t[key]||'?';m[v]=(m[v]||0)+1;});return Object.entries(m).sort((a,b)=>b[1]-a[1]);}
-function bars(id,entries,color){const max=entries[0]?entries[0][1]:1;document.getElementById(id).innerHTML=entries.slice(0,8).map(([l,n])=>`<div class="bar-row"><span class="bar-label" title="${esc(l)}">${esc(l)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/max*100)}%;background:${color(l)}"></div></div><span class="bar-count">${n}</span></div>`).join('');}
-function sBadge(s){const c=s.includes('Progress')?'p-prog':s.includes('Hold')?'p-hold':s==='Resolved'?'p-res':s==='Closed'?'p-closed':'p-open';return`<span class="pill ${c}">${esc(s)}</span>`;}
+function countBy(arr,key){
+  var m={};
+  arr.forEach(function(t){var v=t[key]||'?';m[v]=(m[v]||0)+1;});
+  return Object.entries(m).sort(function(a,b){return b[1]-a[1];});
+}
+function bars(id,entries,colorFn){
+  var max=entries[0]?entries[0][1]:1;
+  document.getElementById(id).innerHTML=entries.slice(0,8).map(function(e){
+    var l=e[0],n=e[1];
+    return '<div class="bar-row"><span class="bar-label" title="'+esc(l)+'">'+esc(l)+'</span>'
+      +'<div class="bar-track"><div class="bar-fill" style="width:'+Math.round(n/max*100)+'%;background:'+colorFn(l)+'"></div></div>'
+      +'<span class="bar-count">'+n+'</span></div>';
+  }).join('');
+}
+function sBadge(s){
+  var c=s.includes('Progress')?'p-prog':s.includes('Hold')?'p-hold':s==='Resolved'?'p-res':s==='Closed'?'p-closed':'p-open';
+  return '<span class="pill '+c+'">'+esc(s)+'</span>';
+}
 function renderAll(){
-  // Compute 30-day window
-  const now=new Date();
-  const cutoff=new Date(now.getTime()-30*24*60*60*1000);
-  const tix30=TICKETS.filter(t=>{
-    if(!t.created)return true;
-    // Parse "Apr 8, 2026 11:17 AM" style dates
-    const d=new Date(t.created.replace(/(\d{1,2}:\d{2}\s?[AP]M)/i,'$1'));
+  var now=new Date();
+  var cutoff=new Date(now.getTime()-30*24*60*60*1000);
+  var tix30=TICKETS.filter(function(t){
+    if(!t.created) return true;
+    var d=new Date(t.created);
     return isNaN(d.getTime())||d>=cutoff;
   });
-  // Date range label
-  const fmt=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-  const rangeLabel=`${fmt(cutoff)} – ${fmt(now)} (${tix30.length} tickets)`;
-  ['statusBars','assignBars','catBars','priBars'].forEach(id=>{
-    const card=document.getElementById(id)?.closest('.card');
-    if(card){
-      let sub=card.querySelector('.chart-range');
-      if(!sub){sub=document.createElement('div');sub.className='chart-range';sub.style.cssText='font-size:10px;color:#aaa;margin-bottom:8px';card.querySelector('h2').after(sub);}
-      sub.textContent=rangeLabel;
-    }
+  var fmt=function(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
+  var rangeLabel=fmt(cutoff)+' - '+fmt(now)+' ('+tix30.length+' tickets)';
+  ['rangeLabel','rangeLabel2','rangeLabel3','rangeLabel4'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.textContent=rangeLabel;
   });
-  // KPIs from 30-day window
-  const o=tix30.filter(t=>t.status.includes('Open')||t.status.includes('Progress')).length;
-  const r=tix30.filter(t=>t.status==='Resolved').length;
-  const h=tix30.filter(t=>t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'))).length;
+  var o=tix30.filter(function(t){return t.status.includes('Open')||t.status.includes('Progress');}).length;
+  var r=tix30.filter(function(t){return t.status==='Resolved';}).length;
+  var h=tix30.filter(function(t){return t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'));}).length;
   document.getElementById('kpiTotal').textContent=totalTicketCount.toLocaleString();
   document.getElementById('kpiOpen').textContent=o;
   document.getElementById('kpiResolved').textContent=r;
   document.getElementById('kpiHigh').textContent=h;
-  // Charts from 30-day window
-  bars('statusBars',count(tix30,'status'),sColor);
-  bars('assignBars',count(tix30,'asgn'),()=>'#7F77DD');
-  bars('catBars',count(tix30,'cat'),cColor);
-  bars('priBars',count(tix30,'pri'),pColor);
-  renderTix();
-}
-  const o=TICKETS.filter(t=>t.status.includes('Open')||t.status.includes('Progress')).length;
-  const r=TICKETS.filter(t=>t.status==='Resolved').length;
-  const h=TICKETS.filter(t=>t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'))).length;
-  document.getElementById('kpiOpen').textContent=o;
-  document.getElementById('kpiResolved').textContent=r;
-  document.getElementById('kpiHigh').textContent=h;
-  bars('statusBars',count(TICKETS,'status'),sColor);
-  bars('assignBars',count(TICKETS,'asgn'),()=>'#7F77DD');
-  bars('catBars',count(TICKETS,'cat'),cColor);
-  bars('priBars',count(TICKETS,'pri'),pColor);
+  bars('statusBars',countBy(tix30,'status'),sColor);
+  bars('assignBars',countBy(tix30,'asgn'),function(){return '#7F77DD';});
+  bars('catBars',countBy(tix30,'cat'),cColor);
+  bars('priBars',countBy(tix30,'pri'),pColor);
   renderTix();
 }
 
-// ── Search + Filter ───────────────────────────────────────────────────────
+// ── Search & Filter ────────────────────────────────────────────────────────
 function onSearch(){searchQuery=document.getElementById('searchInput').value.toLowerCase();renderTix();}
-function filterTix(el){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');activeFilter=el.dataset.f;renderTix();}
-
-function ticketMatchesSearch(t,q){
-  if(!q) return true;
-  const fields=[t.id,t.subj,t.req,t.asgn,t.cat,t.status,t.pri,t.desc||'',
-    (t.notes||[]).map(n=>n.text+' '+n.by).join(' ')].join(' ').toLowerCase();
-  return q.split(' ').filter(Boolean).every(word=>fields.includes(word));
-}
-function ticketMatchesFilter(t,f){
-  if(f==='all')return true;
-  if(f==='open')return t.status==='Open';
-  if(f==='prog')return t.status.includes('Progress');
-  if(f==='hold')return t.status.includes('Hold');
-  if(f==='res')return t.status==='Resolved'||t.status==='Closed';
-  if(f==='high')return t.pri==='High';
-  return true;
+function filterTix(el){
+  document.querySelectorAll('.fc').forEach(function(c){c.classList.remove('active');});
+  el.classList.add('active');
+  activeFilter=el.dataset.f;
+  renderTix();
 }
 function highlight(text,q){
-  if(!q)return esc(text);
-  const words=q.split(' ').filter(Boolean);
-  let out=esc(text);
-  words.forEach(w=>{out=out.replace(new RegExp(esc(w),'gi'),m=>`<mark style="background:#fef08a;border-radius:2px">${m}</mark>`);});
+  if(!q) return esc(text);
+  var out=esc(text);
+  q.split(' ').filter(Boolean).forEach(function(w){
+    out=out.replace(new RegExp(esc(w),'gi'),function(m){return '<mark style="background:#fef08a;border-radius:2px">'+m+'</mark>';});
+  });
   return out;
+}
+function matchSearch(t,q){
+  if(!q) return true;
+  var fields=[t.id,t.subj,t.req,t.asgn,t.cat,t.status,t.pri,t.desc||'',
+    (t.notes||[]).map(function(n){return n.by+' '+n.text;}).join(' ')].join(' ').toLowerCase();
+  return q.split(' ').filter(Boolean).every(function(w){return fields.includes(w);});
+}
+function matchFilter(t,f){
+  if(f==='all') return true;
+  if(f==='open') return t.status==='Open';
+  if(f==='prog') return t.status.includes('Progress');
+  if(f==='hold') return t.status.includes('Hold');
+  if(f==='res') return t.status==='Resolved'||t.status==='Closed';
+  if(f==='high') return t.pri==='High';
+  return true;
 }
 </script>
 <script>
-// ── Ticket table rendering ────────────────────────────────────────────────
+// ── Ticket table ───────────────────────────────────────────────────────────
 function renderTix(){
-  const q=searchQuery, f=activeFilter;
-  const rows=TICKETS.filter(t=>ticketMatchesFilter(t,f)&&ticketMatchesSearch(t,q));
-  const total=TICKETS.filter(t=>ticketMatchesFilter(t,f)).length;
-  document.getElementById('tixRange').textContent=`${rows.length} of ${TICKETS.length} shown`;
-  const meta=document.getElementById('searchMeta');
-  if(q){
-    meta.innerHTML=`Search <strong>"${esc(q)}"</strong> — ${rows.length} result${rows.length!==1?'s':''} across subject, requester, assignee, status, category and notes`;
-  } else {meta.textContent='';}
-
-  let html='';
-  rows.forEach((t,i)=>{
-    const notesSnippet=t.notes&&t.notes.length>0?t.notes[0].text.substring(0,60)+'...':'';
-    const notesLoaded=t.notes&&t.notes.length>0;
-    html+=`<tr class="ticket-row" onclick="toggleDetail('${t.id}')">
-      <td><a href="${HD}/WorkOrder.do?woMode=viewWO&woID=${t.id}" target="_blank" style="color:#185FA5" onclick="event.stopPropagation()">${t.id}</a></td>
-      <td>${esc(t.cat)}</td>
-      <td class="t-subj" title="${esc(t.subj)}">${highlight(t.subj,q)}</td>
-      <td>${highlight(t.req,q)}</td>
-      <td>${highlight(t.asgn,q)}</td>
-      <td>${sBadge(t.status)}</td>
-      <td><span class="pill ${t.pri==='High'?'p-high':t.pri==='Low'?'p-low':'p-med'}">${esc(t.pri)}</span></td>
-      <td>
-        ${notesLoaded
-          ?`<span class="t-notes-snippet" title="${esc(notesSnippet)}">${highlight(notesSnippet,q)}</span>`
-          :`<button class="load-notes-btn" onclick="event.stopPropagation();loadNotes('${t.id}')">Load ↓</button>`}
-      </td>
-      <td style="white-space:nowrap">${esc(t.created)}</td>
-      <td style="white-space:nowrap;color:${t.due!=='-'?'#A32D2D':'#aaa'}">${esc(t.due)}</td>
-    </tr>
-    <tr class="detail-row hidden" id="detail-${t.id}">
-      <td colspan="10">
-        <div class="detail-box">
-          <div class="detail-cols">
-            <div>
-              <h4>Description</h4>
-              <p id="desc-${t.id}">${t.desc?highlight(t.desc,q):'<span style="color:#aaa;font-style:italic">No description loaded. Click row to refresh.</span>'}</p>
-            </div>
-            <div>
-              <h4>Notes <span id="notes-count-${t.id}" style="font-weight:400;color:#888">(${t.notes?t.notes.length:0})</span>
-                <button class="load-notes-btn" onclick="loadNotes('${t.id}')" id="reload-btn-${t.id}">↻ Reload</button>
-              </h4>
-              <div id="notes-area-${t.id}">
-                ${renderNotesHtml(t,q)}
-              </div>
-            </div>
-          </div>
-          <div style="margin-top:10px;font-size:11px;color:#aaa">
-            <a href="${HD}/WorkOrder.do?woMode=viewWO&woID=${t.id}" target="_blank" style="color:#185FA5">Open full ticket in help desk ↗</a>
-          </div>
-        </div>
-      </td>
-    </tr>`;
+  var q=searchQuery, f=activeFilter;
+  var rows=TICKETS.filter(function(t){return matchFilter(t,f)&&matchSearch(t,q);});
+  var meta=document.getElementById('searchMeta');
+  if(q){meta.innerHTML='Search <strong>"'+esc(q)+'"</strong> — '+rows.length+' result'+(rows.length!==1?'s':'')+' (subject, requester, assignee, status, category, notes)';}
+  else{meta.textContent='';}
+  document.getElementById('tixRange').textContent=rows.length+' of '+TICKETS.length+' shown';
+  var html='';
+  rows.forEach(function(t){
+    var snippet=t.notes&&t.notes.length?t.notes[0].text.substring(0,55)+'...':'';
+    var notesLoaded=t.notes&&t.notes.length>0;
+    html+='<tr class="ticket-row" onclick="toggleDetail(\''+t.id+'\')">'
+      +'<td><a href="'+HD+'/WorkOrder.do?woMode=viewWO&woID='+t.id+'" target="_blank" style="color:#185FA5" onclick="event.stopPropagation()">'+t.id+'</a></td>'
+      +'<td>'+esc(t.cat)+'</td>'
+      +'<td class="t-subj" title="'+esc(t.subj)+'">'+highlight(t.subj,q)+'</td>'
+      +'<td>'+highlight(t.req,q)+'</td>'
+      +'<td>'+highlight(t.asgn,q)+'</td>'
+      +'<td>'+sBadge(t.status)+'</td>'
+      +'<td><span class="pill '+(t.pri==='High'?'p-high':t.pri==='Low'?'p-low':'p-med')+'">'+esc(t.pri)+'</span></td>'
+      +'<td>'+(notesLoaded?'<span class="t-notes-snippet" title="'+esc(snippet)+'">'+highlight(snippet,q)+'</span>':'<button class="load-notes-btn" onclick="event.stopPropagation();loadNotes(\''+t.id+'\')">Load ↓</button>')+'</td>'
+      +'<td style="white-space:nowrap">'+esc(t.created)+'</td>'
+      +'<td style="white-space:nowrap;color:'+(t.due!=='-'?'#A32D2D':'#aaa')+'">'+esc(t.due)+'</td>'
+      +'</tr>'
+      +'<tr class="detail-row hidden" id="detail-'+t.id+'">'
+      +'<td colspan="10"><div class="detail-box"><div class="detail-cols">'
+      +'<div><h4>Description</h4><p id="desc-'+t.id+'">'+(t.desc?highlight(t.desc,q):'<span style="color:#aaa;font-style:italic">None loaded.</span>')+'</p></div>'
+      +'<div><h4>Notes <span id="nc-'+t.id+'" style="font-weight:400;color:#888">('+((t.notes||[]).length)+')</span>'
+      +' <button class="load-notes-btn" onclick="loadNotes(\''+t.id+'\')" id="rb-'+t.id+'">↻ Reload</button></h4>'
+      +'<div id="na-'+t.id+'">'+renderNotes(t,q)+'</div></div>'
+      +'</div>'
+      +'<div style="margin-top:10px;font-size:11px;color:#aaa"><a href="'+HD+'/WorkOrder.do?woMode=viewWO&woID='+t.id+'" target="_blank" style="color:#185FA5">Open full ticket ↗</a></div>'
+      +'</div></td></tr>';
   });
-  document.getElementById('tixBody').innerHTML=html||`<tr><td colspan="10" style="text-align:center;color:#aaa;padding:20px">No tickets match.</td></tr>`;
+  document.getElementById('tixBody').innerHTML=html||'<tr><td colspan="10" style="text-align:center;color:#aaa;padding:20px">No tickets match.</td></tr>';
 }
-
-function renderNotesHtml(t,q){
-  if(!t.notes||t.notes.length===0) return `<p class="notes-empty">No notes loaded — click "Load ↓" in the table row, or "↻ Reload" above.</p>`;
-  return t.notes.map(n=>`<div class="detail-note">
-    <div class="detail-note-meta">${esc(n.by)} &nbsp;·&nbsp; ${esc(n.time)}</div>
-    <div class="detail-note-body">${highlight(n.text,q)}</div>
-  </div>`).join('');
+function renderNotes(t,q){
+  if(!t.notes||!t.notes.length) return '<p class="notes-empty">No notes loaded — click "Load ↓" or "↻ Reload".</p>';
+  return t.notes.map(function(n){
+    return '<div class="detail-note"><div class="detail-note-meta">'+esc(n.by)+' &nbsp;·&nbsp; '+esc(n.time)+'</div>'
+      +'<div class="detail-note-body">'+highlight(n.text,q)+'</div></div>';
+  }).join('');
 }
-
 function toggleDetail(id){
-  const row=document.getElementById('detail-'+id);
-  if(!row)return;
-  const isOpen=!row.classList.contains('hidden');
+  var row=document.getElementById('detail-'+id);
+  if(!row) return;
+  var isOpen=!row.classList.contains('hidden');
   if(openDetailRow&&openDetailRow!==id){
-    const prev=document.getElementById('detail-'+openDetailRow);
-    if(prev)prev.classList.add('hidden');
+    var prev=document.getElementById('detail-'+openDetailRow);
+    if(prev) prev.classList.add('hidden');
   }
   if(isOpen){row.classList.add('hidden');openDetailRow=null;}
   else{row.classList.remove('hidden');openDetailRow=id;}
 }
+
+// ── Notes loader ───────────────────────────────────────────────────────────
+function loadNotes(id){
+  var area=document.getElementById('na-'+id);
+  var btn=document.getElementById('rb-'+id);
+  if(area) area.innerHTML='<div style="font-size:12px;color:#888;padding:6px 0"><span class="spinner"></span>Loading notes...</div>';
+  if(btn) btn.textContent='Loading...';
+  var noteListUrl=HD+'/api/v3/requests/'+id+'/notes?SUBREQUEST=XMLHTTP';
+  fetch(noteListUrl,{credentials:'include'})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var noteList=d.notes||[];
+      if(!noteList.length){
+        var tix=TICKETS.find(function(t){return t.id===id;});
+        if(tix) tix.notes=[];
+        if(area) area.innerHTML='<p class="notes-empty">No notes on this ticket.</p>';
+        if(btn) btn.textContent='↻ Reload';
+        return;
+      }
+      return Promise.all(noteList.map(function(n){
+        return fetch(HD+'/api/v3/requests/'+id+'/notes/'+n.id+'?SUBREQUEST=XMLHTTP',{credentials:'include'})
+          .then(function(r){return r.json();}).catch(function(){return {note:n};});
+      })).then(function(details){
+        var parsed=details.map(function(d){
+          var n=d.note||{};
+          return{by:(n.added_by&&n.added_by.name)||'Unknown',time:(n.added_time&&n.added_time.display_value)||'',text:n.description?stripHtml(n.description).trim():'(no text)'};
+        });
+        return fetch(HD+'/api/v3/requests/'+id+'?SUBREQUEST=XMLHTTP',{credentials:'include'})
+          .then(function(r){return r.json();}).catch(function(){return {};})
+          .then(function(td){
+            var desc=td.request?stripHtml(td.request.description||'').trim():'';
+            var tix=TICKETS.find(function(t){return t.id===id;});
+            if(tix){tix.notes=parsed;tix.desc=desc;localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));}
+            if(area) area.innerHTML=renderNotes({notes:parsed},searchQuery);
+            var descEl=document.getElementById('desc-'+id);
+            if(descEl) descEl.innerHTML=desc?highlight(desc,searchQuery):'<span style="color:#aaa;font-style:italic">No description.</span>';
+            var nc=document.getElementById('nc-'+id);
+            if(nc) nc.textContent='('+parsed.length+')';
+            if(btn) btn.textContent='↻ Reload';
+            renderTix();
+            toast('Loaded '+parsed.length+' note'+(parsed.length!==1?'s':'')+' for #'+id);
+          });
+      });
+    })
+    .catch(function(e){
+      if(area) area.innerHTML='<p class="notes-empty">Could not load — must be on Smalley network. <a href="'+HD+'/WorkOrder.do?woMode=viewWO&woID='+id+'" target="_blank" style="color:#185FA5">Open in help desk ↗</a></p>';
+      if(btn) btn.textContent='↻ Reload';
+    });
+}
 </script>
 <script>
-// ── Notes loading via help desk API ──────────────────────────────────────
-async function loadNotes(id){
-  const area=document.getElementById('notes-area-'+id);
-  const btn=document.getElementById('reload-btn-'+id);
-  if(area) area.innerHTML=`<div class="notes-loading"><span class="spinner"></span>Loading notes from help desk...</div>`;
-  if(btn) btn.textContent='Loading...';
-  try{
-    // Fetch notes list
-    const r=await fetch(`${HD}/api/v3/requests/${id}/notes?SUBREQUEST=XMLHTTP`);
-    const d=await r.json();
-    const noteList=d.notes||[];
-    if(noteList.length===0){
-      const tix=TICKETS.find(t=>t.id===id);
-      if(tix)tix.notes=[];
-      if(area)area.innerHTML=`<p class="notes-empty">No notes on this ticket.</p>`;
-      if(btn)btn.textContent='↻ Reload';
-      return;
-    }
-    // Fetch full text for each note
-    const details=await Promise.all(noteList.map(n=>
-      fetch(`${HD}/api/v3/requests/${id}/notes/${n.id}?SUBREQUEST=XMLHTTP`).then(r=>r.json()).catch(()=>({note:n}))
-    ));
-    const parsed=details.map(d=>{
-      const n=d.note||{};
-      const rawDesc=n.description||'';
-      const text=rawDesc?stripHtml(rawDesc).trim():'(no text)';
-      return{
-        by:n.added_by?n.added_by.name:'Unknown',
-        time:n.added_time?n.added_time.display_value:'',
-        text
-      };
-    });
-    // Also fetch description
-    const ticketR=await fetch(`${HD}/api/v3/requests/${id}?SUBREQUEST=XMLHTTP`).then(r=>r.json()).catch(()=>({}));
-    const desc=ticketR.request?stripHtml(ticketR.request.description||'').trim():'';
-
-    // Update ticket data
-    const tix=TICKETS.find(t=>t.id===id);
-    if(tix){tix.notes=parsed;tix.desc=desc;localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));}
-    // Update UI
-    if(area)area.innerHTML=renderNotesHtml({notes:parsed},searchQuery);
-    const descEl=document.getElementById('desc-'+id);
-    if(descEl)descEl.innerHTML=desc?highlight(desc,searchQuery):'<span style="color:#aaa;font-style:italic">No description.</span>';
-    const countEl=document.getElementById('notes-count-'+id);
-    if(countEl)countEl.textContent=`(${parsed.length})`;
-    if(btn)btn.textContent='↻ Reload';
-    // Refresh the snippet in the table row
-    renderTix();
-    toast(`Loaded ${parsed.length} note${parsed.length!==1?'s':''} for ticket ${id}`);
-  }catch(e){
-    if(area)area.innerHTML=`<p class="notes-empty">Could not load notes — must be on Smalley network. <a href="${HD}/WorkOrder.do?woMode=viewWO&woID=${id}" target="_blank" style="color:#185FA5">Open in help desk ↗</a></p>`;
-    if(btn)btn.textContent='↻ Reload';
-  }
-}
-
-// ── Auto-refresh engine ──────────────────────────────────────────────────
-function startRefreshCycle(){
-  clearInterval(refreshTimer);clearInterval(countdownTimer);
-  if(!apiKey){document.getElementById('refreshStatus').textContent='Click "Refresh from Help Desk" to update — no API key needed';document.getElementById('countdown').textContent='';return;}
-  scheduleNext();
-}
-function scheduleNext(){
-  nextRefreshAt=Date.now()+intervalMin*60*1000;
-  document.getElementById('refreshStatus').textContent=`Every ${intervalMin} min`;
-  updateCountdown();
-  clearInterval(countdownTimer);
-  countdownTimer=setInterval(()=>{if(Date.now()>=nextRefreshAt){clearInterval(countdownTimer);doRefresh();}else updateCountdown();},1000);
-  refreshTimer=setTimeout(doRefresh,intervalMin*60*1000);
-}
-function updateCountdown(){
-  if(!nextRefreshAt)return;
-  const sec=Math.max(0,Math.round((nextRefreshAt-Date.now())/1000));
-  document.getElementById('countdown').textContent=`Next refresh in ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
-}
-function changeInterval(val,el){
-  intervalMin=val;localStorage.setItem('hd_interval',val);
-  document.querySelectorAll('.int-opt').forEach(e=>e.classList.remove('active'));
-  document.querySelectorAll(`.int-opt[data-val="${val}"]`).forEach(e=>e.classList.add('active'));
-  clearTimeout(refreshTimer);startRefreshCycle();
-}
-async function doRefresh(){
-  if(!apiKey)return;
-  setBadge('refreshing');
-  document.getElementById('refreshStatus').textContent='Refreshing...';
-  try{
-    const prevIds=new Set(TICKETS.map(t=>t.id));
-    const sys=`You are a help desk data extractor for Smalley IT. Use Microsoft 365 to search for recent help desk ticket emails from helpdesk.smalley.com. Return ONLY a JSON array. Fields: id,subject,requester,assigned,status,priority,created,due,category. If nothing found return [].`;
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:sys,
-        messages:[{role:'user',content:'Search M365 for Smalley help desk tickets in the last '+intervalMin+' minutes. Return JSON.'}],
-        mcp_servers:[{type:'url',url:'https://microsoft365.mcp.claude.com/mcp',name:'microsoft365'}]
-      })
-    });
-    const data=await r.json();
-    const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    const match=txt.match(/\[[\s\S]*\]/);
-    if(match){
-      const fresh=JSON.parse(match[0]);
-      const newOnes=fresh.filter(t=>!prevIds.has(String(t.id)));
-      if(newOnes.length){
-        const mapped=newOnes.map(t=>({id:String(t.id||''),cat:t.category||'Request',subj:t.subject||'',req:t.requester||'',asgn:t.assigned||'',status:t.status||'Open',created:t.created||new Date().toLocaleString(),due:t.due||'-',pri:t.priority||'Medium',desc:'',notes:[]}));
-        TICKETS=[...mapped,...TICKETS];
-        localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
-        showNewAlert(mapped);
-        toast(`${mapped.length} new ticket${mapped.length>1?'s':''} detected!`);
-      }
-    }
-    const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('lastUpdated').textContent=`Last refreshed ${now}`;
-    localStorage.setItem('hd_last_refresh',Date.now());
-    setBadge('live');renderAll();
-  }catch(e){setBadge('error');}
-  scheduleNext();
-}
-function showNewAlert(tickets){
-  document.getElementById('newTicketsAlert').style.display='block';
-  document.getElementById('newTicketsList').innerHTML=tickets.map(t=>`<div>● <strong>${t.id}</strong> — ${esc(t.subj)} <span style="color:#3B6D11;font-size:10px">[${t.status}]</span></div>`).join('');
-  setTimeout(()=>{document.getElementById('newTicketsAlert').style.display='none';},30000);
-}
-async function manualRefresh(){clearTimeout(refreshTimer);clearInterval(countdownTimer);nextRefreshAt=null;document.getElementById('countdown').textContent='';await doRefresh();}
-
-// ── Direct Help Desk Refresh via bookmarklet + postMessage ───────────────
+// ── Bookmarklet refresh ────────────────────────────────────────────────────
 function refreshFromHelpDesk(){
-  window._hdMsgHandler = window._hdMsgHandler || function(e){
+  window._hdMsgHandler=function(e){
     if(!e.data||e.data.type!=='HD_REFRESH') return;
-    receiveHDData(e.data.requests, e.data.total);
+    receiveHDData(e.data.requests,e.data.total);
   };
-  window.removeEventListener('message', window._hdMsgHandler);
-  window.addEventListener('message', window._hdMsgHandler);
-  const popup=window.open('https://helpdesk.smalley.com/WOListView.do','_hdRefresh','width=1000,height=700,left=100,top=100');
-  showBookmarkletInstructions(!!popup);
+  window.removeEventListener('message',window._hdMsgHandler);
+  window.addEventListener('message',window._hdMsgHandler);
+  var popup=window.open('https://helpdesk.smalley.com/WOListView.do','_hdRefresh','width=1000,height=700,left=100,top=100');
+  showBMInstructions(!!popup);
 }
-
-function receiveHDData(requests, total){
+function receiveHDData(requests,total){
   if(!requests||!requests.length){toast('No ticket data received.');return;}
-  // Accept total from bookmarklet, or fall back to localStorage saved value
-  if(total && total>0){
-    totalTicketCount=total;
-    localStorage.setItem('hd_total_count', total);
-  } else {
-    // Try to restore last known total from localStorage
-    const saved=localStorage.getItem('hd_total_count');
-    if(saved && parseInt(saved)>0) totalTicketCount=parseInt(saved);
-  }
-  const prev=new Map(TICKETS.map(t=>[t.id,t]));
-  const refreshed=requests.map(t=>({
-    id:String(t.id||''),
-    cat:(t.category&&t.category.name)||'Request',
-    subj:t.subject||'',
-    req:(t.requester&&t.requester.name)||'',
-    asgn:(t.technician&&t.technician.name)||'Unassigned',
-    status:(t.status&&t.status.name)||'Open',
-    created:(t.created_time&&t.created_time.display_value)||'',
-    due:(t.due_by_time&&t.due_by_time.display_value)||'-',
-    pri:(t.priority&&t.priority.name)||'Medium',
-    site:(t.site&&t.site.name)||'-',
-    desc:(prev.get(String(t.id))||{}).desc||'',
-    notes:(prev.get(String(t.id))||{}).notes||[]
-  }));
-  const newIds=new Set(refreshed.map(t=>t.id));
-  TICKETS=[...refreshed,...TICKETS.filter(t=>!newIds.has(t.id))];
+  if(total&&total>0){totalTicketCount=total;localStorage.setItem('hd_total_count',total);}
+  var prev=new Map(TICKETS.map(function(t){return[t.id,t];}));
+  var refreshed=requests.map(function(t){
+    var p=prev.get(String(t.id))||{};
+    return{
+      id:String(t.id||''),
+      cat:(t.category&&t.category.name)||(t.service_category&&t.service_category.name)||'Request',
+      subj:t.subject||'',
+      req:(t.requester&&t.requester.name)||'',
+      asgn:(t.technician&&t.technician.name)||'Unassigned',
+      status:(t.status&&t.status.name)||'Open',
+      created:(t.created_time&&t.created_time.display_value)||'',
+      due:(t.due_by_time&&t.due_by_time.display_value)||'-',
+      pri:(t.priority&&t.priority.name)||'Medium',
+      site:(t.site&&t.site.name)||'-',
+      desc:p.desc||'', notes:p.notes||[]
+    };
+  });
+  var newIds=new Set(refreshed.map(function(t){return t.id;}));
+  TICKETS=refreshed.concat(TICKETS.filter(function(t){return !newIds.has(t.id);}));
   localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
-  const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   document.getElementById('lastUpdated').textContent='Last refreshed '+now;
   localStorage.setItem('hd_last_refresh',Date.now());
-  setBadge('live'); renderAll();
+  setBadge('live');
+  renderAll();
   toast('Loaded '+refreshed.length+' tickets from help desk');
-  const ov=document.getElementById('bm-overlay');
+  var ov=document.getElementById('bm-overlay');
   if(ov) ov.style.display='none';
 }
-
-function showBookmarkletInstructions(popupOpened){
-  const bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nThis bookmark must be clicked while you are on the Help Desk tab (helpdesk.smalley.com).\\n\\nSteps:\\n1. Click Refresh from Help Desk on the dashboard first\\n2. Wait for the help desk tab to load fully\\n3. Switch to that help desk tab\\n4. Then click this SD Refresh bookmark');return;}var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var q=encodeURIComponent(JSON.stringify({list_info:{row_count:'100',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(!reqs.length){alert('No tickets returned. Please make sure you are logged in to the help desk.');return;}var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:reqs,total:d.list_info&&d.list_info.total_count?parseInt(d.list_info.total_count):reqs.length},'*');alert('Done! Sent '+reqs.length+' tickets to your dashboard.');}else{alert('Dashboard window not found.\\nMake sure you clicked Refresh from Help Desk on the dashboard FIRST, then come back here and click this bookmark.');}}).catch(function(e){alert('Error: '+e.message+'\\n\\nMake sure you are logged in to the help desk.');});})();";
-  let ov=document.getElementById('bm-overlay');
-  if(!ov){ov=document.createElement('div');ov.id='bm-overlay';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center';document.body.appendChild(ov);}
+function showBMInstructions(popupOpened){
+  var bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nThis bookmark must be clicked while on the Help Desk tab (helpdesk.smalley.com).\\n\\nSteps:\\n1. Click Refresh from Help Desk on the dashboard\\n2. Wait for the help desk tab to load\\n3. Switch to the help desk tab\\n4. Click this bookmark');return;}var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var q=encodeURIComponent(JSON.stringify({list_info:{row_count:'100',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(!reqs.length){alert('No tickets returned. Please make sure you are logged in.');return;}var total=d.list_info&&d.list_info.total_count?parseInt(d.list_info.total_count):reqs.length;var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:reqs,total:total},'*');alert('Done! Sent '+reqs.length+' tickets to your dashboard.');}else{alert('Dashboard window not found.\\nClick Refresh from Help Desk on the dashboard first.');}}).catch(function(e){alert('Error: '+e.message);});})();";
+  var ov=document.getElementById('bm-overlay');
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='bm-overlay';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center';
+    document.body.appendChild(ov);
+  }
   ov.style.display='flex';
   ov.innerHTML='<div style="background:#fff;border-radius:12px;padding:24px;max-width:500px;width:90%;box-shadow:0 4px 24px rgba(0,0,0,.2)">'
-    +'<h2 style="font-size:15px;font-weight:500;margin-bottom:10px">↻ Refresh from Help Desk</h2>'
-    +(popupOpened?'<p style="font-size:13px;color:#3B6D11;background:#EAF3DE;padding:8px 12px;border-radius:8px;margin-bottom:12px">✓ Help desk tab opened — follow the steps below</p>':'')
+    +'<h2 style="font-size:15px;font-weight:500;margin-bottom:10px">Refresh from Help Desk</h2>'
+    +(popupOpened?'<p style="font-size:13px;color:#3B6D11;background:#EAF3DE;padding:8px 12px;border-radius:8px;margin-bottom:12px">Help desk tab opened — follow steps below</p>':'')
     +'<p style="font-size:13px;color:#666;line-height:1.6;margin-bottom:12px"><strong>One-time setup:</strong> Drag the button below to your Chrome bookmarks bar.</p>'
     +'<div style="margin-bottom:14px;padding:10px 12px;background:#f5f5f0;border-radius:8px;display:flex;align-items:center;gap:10px">'
-    +'<a href="'+bmCode+'" onclick="alert(\'Drag this to your bookmarks bar — do not click it here.\');return false;" style="font-size:13px;font-weight:500;color:#534AB7;text-decoration:none;padding:6px 14px;background:#EEEDFE;border-radius:6px;border:0.5px solid #7F77DD;cursor:grab;white-space:nowrap">📋 SD Refresh</a>'
-    +'<span style="font-size:12px;color:#888">← drag to your bookmarks bar</span>'
+    +'<a href="'+bmCode+'" onclick="alert(\'Drag this to your bookmarks bar — do not click here.\');return false;" style="font-size:13px;font-weight:500;color:#534AB7;text-decoration:none;padding:6px 14px;background:#EEEDFE;border-radius:6px;border:0.5px solid #7F77DD;cursor:grab;white-space:nowrap">SD Refresh</a>'
+    +'<span style="font-size:12px;color:#888">← drag to bookmarks bar</span>'
     +'</div>'
-    +'<p style="font-size:12px;font-weight:500;color:#555;margin-bottom:6px">Each time you want to refresh:</p>'
+    +'<p style="font-size:12px;font-weight:500;color:#555;margin-bottom:6px">Each refresh:</p>'
     +'<ol style="font-size:13px;color:#666;line-height:2;padding-left:18px;margin-bottom:16px">'
-    +'<li>Click <strong>↻ Refresh from Help Desk</strong> here (opens the help desk)</li>'
+    +'<li>Click <strong>Refresh from Help Desk</strong> here (opens help desk tab)</li>'
     +'<li>Wait for the help desk tab to finish loading</li>'
-    +'<li>Click the <strong>SD Refresh</strong> bookmark in your bookmarks bar</li>'
-    +'<li>Ticket data loads here automatically ✓</li>'
+    +'<li>Switch to the help desk tab</li>'
+    +'<li>Click the <strong>SD Refresh</strong> bookmark — done!</li>'
     +'</ol>'
     +'<button onclick="document.getElementById(\'bm-overlay\').style.display=\'none\'" style="width:100%;padding:9px;font-size:13px;border:0.5px solid #d0cec8;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit">Close</button>'
     +'</div>';
 }
 </script>
 <script>
-// ── AI Q&A ───────────────────────────────────────────────────────────────
-async function ask(q){
-  if(!q)q=document.getElementById('chatIn').value.trim();
-  if(!q)return;
-  document.getElementById('chatIn').value='';
-  const msgs=document.getElementById('chatMsgs');
-  msgs.innerHTML+=`<div class="msg msg-u">${esc(q)}</div>`;
-  msgs.innerHTML+=`<div class="msg msg-a" id="aiR"><span class="spinner"></span>Analyzing...</div>`;
-  msgs.scrollTop=msgs.scrollHeight;
-  if(!apiKey){document.getElementById('aiR').textContent='No API key — click ⚙ Settings.';return;}
-  // Trim payload — only send fields needed for analysis, cap note text at 200 chars
-  const slim=TICKETS.map(t=>({
-    id:t.id, cat:t.cat, subj:t.subj, req:t.req, asgn:t.asgn,
-    status:t.status, pri:t.pri, created:t.created, due:t.due,
-    desc:(t.desc||'').substring(0,200),
-    notes:(t.notes||[]).map(n=>n.by+': '+(n.text||'').substring(0,150)).join(' | ')
-  }));
-  const sys=`You are an IT help desk analyst for Smalley (Lake Zurich IL). You have ${TICKETS.length} of ${totalTicketCount} total tickets. Answer concisely in 2-4 sentences max unless a list is needed. Data: ${JSON.stringify(slim)}`;
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})
-    });
-    const d=await r.json();
-    document.getElementById('aiR').innerHTML=((d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(''))||'No response.';
-  }catch(e){document.getElementById('aiR').textContent='Error: '+e.message;}
-  msgs.scrollTop=msgs.scrollHeight;
+// ── Auto-refresh (AI) ──────────────────────────────────────────────────────
+function startRefreshCycle(){
+  clearInterval(refreshTimer); clearInterval(countdownTimer);
+  if(!apiKey){
+    document.getElementById('refreshStatus').textContent='Click "Refresh from Help Desk" to update';
+    document.getElementById('countdown').textContent='';
+    return;
+  }
+  scheduleNext();
+}
+function scheduleNext(){
+  nextRefreshAt=Date.now()+intervalMin*60*1000;
+  document.getElementById('refreshStatus').textContent='AI refresh every '+intervalMin+' min';
+  updateCountdown();
+  clearInterval(countdownTimer);
+  countdownTimer=setInterval(function(){
+    if(Date.now()>=nextRefreshAt){clearInterval(countdownTimer);doAIRefresh();}
+    else updateCountdown();
+  },1000);
+  refreshTimer=setTimeout(doAIRefresh,intervalMin*60*1000);
+}
+function updateCountdown(){
+  if(!nextRefreshAt) return;
+  var sec=Math.max(0,Math.round((nextRefreshAt-Date.now())/1000));
+  document.getElementById('countdown').textContent='Next AI refresh in '+Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');
+}
+function changeInterval(val,el){
+  intervalMin=val; localStorage.setItem('hd_interval',val);
+  document.querySelectorAll('.int-opt').forEach(function(e){e.classList.remove('active');});
+  document.querySelectorAll('.int-opt[data-val="'+val+'"]').forEach(function(e){e.classList.add('active');});
+  clearTimeout(refreshTimer); startRefreshCycle();
+}
+function manualRefresh(){clearTimeout(refreshTimer);clearInterval(countdownTimer);nextRefreshAt=null;document.getElementById('countdown').textContent='';doAIRefresh();}
+function doAIRefresh(){
+  if(!apiKey) return;
+  setBadge('refreshing');
+  document.getElementById('refreshStatus').textContent='AI refreshing...';
+  var prevIds=new Set(TICKETS.map(function(t){return t.id;}));
+  var sys='You are a help desk data extractor for Smalley IT. Use Microsoft 365 to search for recent help desk ticket emails. Return ONLY a JSON array. Fields: id,subject,requester,assigned,status,priority,created,due,category. If nothing found return [].';
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:2000,system:sys,
+      messages:[{role:'user',content:'Search M365 for Smalley help desk tickets in the last '+intervalMin+' minutes. Return JSON.'}],
+      mcp_servers:[{type:'url',url:'https://microsoft365.mcp.claude.com/mcp',name:'microsoft365'}]
+    })
+  }).then(function(r){return r.json();})
+  .then(function(data){
+    var txt=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+    var match=txt.match(/\[[\s\S]*\]/);
+    if(match){
+      var fresh=JSON.parse(match[0]);
+      var newOnes=fresh.filter(function(t){return !prevIds.has(String(t.id));});
+      if(newOnes.length){
+        var mapped=newOnes.map(function(t){return{id:String(t.id||''),cat:t.category||'Request',subj:t.subject||'',req:t.requester||'',asgn:t.assigned||'',status:t.status||'Open',created:t.created||new Date().toLocaleString(),due:t.due||'-',pri:t.priority||'Medium',desc:'',notes:[]};});
+        TICKETS=mapped.concat(TICKETS);
+        localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
+        document.getElementById('newTicketsAlert').style.display='block';
+        document.getElementById('newTicketsList').innerHTML=mapped.map(function(t){return '<div>● <strong>'+t.id+'</strong> — '+esc(t.subj)+' <span style="color:#3B6D11;font-size:10px">['+t.status+']</span></div>';}).join('');
+        setTimeout(function(){document.getElementById('newTicketsAlert').style.display='none';},30000);
+        toast(mapped.length+' new ticket'+(mapped.length!==1?'s':'')+' detected!');
+      }
+    }
+    var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('lastUpdated').textContent='Last refreshed '+now;
+    localStorage.setItem('hd_last_refresh',Date.now());
+    setBadge('live'); renderAll();
+  })
+  .catch(function(){setBadge('error');})
+  .finally(function(){scheduleNext();});
 }
 
-// ── Setup ─────────────────────────────────────────────────────────────────
+// ── AI Q&A ─────────────────────────────────────────────────────────────────
+function ask(q){
+  if(!q) q=document.getElementById('chatIn').value.trim();
+  if(!q) return;
+  document.getElementById('chatIn').value='';
+  var msgs=document.getElementById('chatMsgs');
+  msgs.innerHTML+='<div class="msg msg-u">'+esc(q)+'</div>';
+  msgs.innerHTML+='<div class="msg msg-a" id="aiR"><span class="spinner"></span>Analyzing...</div>';
+  msgs.scrollTop=msgs.scrollHeight;
+  if(!apiKey){document.getElementById('aiR').textContent='No API key — click Settings.';return;}
+  var slim=TICKETS.map(function(t){return{id:t.id,cat:t.cat,subj:t.subj,req:t.req,asgn:t.asgn,status:t.status,pri:t.pri,created:t.created,due:t.due,desc:(t.desc||'').substring(0,150),notes:(t.notes||[]).map(function(n){return n.by+': '+(n.text||'').substring(0,120);}).join(' | ')};});
+  var sys='You are an IT help desk analyst for Smalley (Lake Zurich IL). '+TICKETS.length+' tickets of '+totalTicketCount+' total. Answer in 2-4 sentences max unless a list is needed. Data: '+JSON.stringify(slim);
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})
+  }).then(function(r){return r.json();})
+  .then(function(d){document.getElementById('aiR').innerHTML=((d.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join(''))||'No response.';})
+  .catch(function(e){document.getElementById('aiR').textContent='Error: '+e.message;})
+  .finally(function(){msgs.scrollTop=msgs.scrollHeight;});
+}
+
+// ── Setup ──────────────────────────────────────────────────────────────────
 function openSetup(){document.getElementById('setupModal').style.display='flex';}
 function saveSetup(){
-  const k=document.getElementById('apiKeyInput').value.trim();
-  const sel=document.querySelector('#intervalSelect .int-opt.active');
+  var k=document.getElementById('apiKeyInput').value.trim();
+  var sel=document.querySelector('#intervalSelect .int-opt.active');
   if(k){apiKey=k;localStorage.setItem('hd_api_key',k);}
   if(sel){intervalMin=parseInt(sel.dataset.val);localStorage.setItem('hd_interval',intervalMin);}
   document.getElementById('setupModal').style.display='none';
   startRefreshCycle();
-  if(k)toast('API key saved. Auto-refresh active every '+intervalMin+' min.');
+  if(k) toast('API key saved. Auto-refresh every '+intervalMin+' min.');
 }
 function skipSetup(){document.getElementById('setupModal').style.display='none';startRefreshCycle();}
-document.querySelectorAll('#intervalSelect .int-opt').forEach(el=>{
-  el.onclick=()=>{document.querySelectorAll('#intervalSelect .int-opt').forEach(e=>e.classList.remove('active'));el.classList.add('active');};
+document.querySelectorAll('#intervalSelect .int-opt').forEach(function(el){
+  el.onclick=function(){
+    document.querySelectorAll('#intervalSelect .int-opt').forEach(function(e){e.classList.remove('active');});
+    el.classList.add('active');
+  };
 });
 
-// ── Init ─────────────────────────────────────────────────────────────────
+// ── Init ───────────────────────────────────────────────────────────────────
 window.onload=function(){
   apiKey=localStorage.getItem('hd_api_key')||'';
   intervalMin=parseInt(localStorage.getItem('hd_interval')||'15');
-  const saved=localStorage.getItem('hd_tickets');
+  var saved=localStorage.getItem('hd_tickets');
   TICKETS=saved?JSON.parse(saved):SEED;
-  const savedTotal=localStorage.getItem('hd_total_count');
+  var savedTotal=localStorage.getItem('hd_total_count');
   if(savedTotal) totalTicketCount=parseInt(savedTotal);
-  document.querySelectorAll('.int-opt[data-val]').forEach(el=>{
+  document.querySelectorAll('.int-opt[data-val]').forEach(function(el){
     el.classList.toggle('active',parseInt(el.dataset.val)===intervalMin);
   });
-  const lr=localStorage.getItem('hd_last_refresh');
-  if(lr){const d=new Date(parseInt(lr));document.getElementById('lastUpdated').textContent='Last refreshed '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
-  else document.getElementById('lastUpdated').textContent='Apr 8, 2026 snapshot';
-  if(apiKey)document.getElementById('setupModal').style.display='none';
+  var lr=localStorage.getItem('hd_last_refresh');
+  if(lr){document.getElementById('lastUpdated').textContent='Last refreshed '+new Date(parseInt(lr)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+  else{document.getElementById('lastUpdated').textContent='Apr 8, 2026 snapshot';}
+  if(apiKey) document.getElementById('setupModal').style.display='none';
   renderAll();
   startRefreshCycle();
 };
 </script>
-</body></html>
+</body>
+</html>
