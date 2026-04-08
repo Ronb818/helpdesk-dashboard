@@ -587,7 +587,7 @@ function doAIRefresh(){
   var prevIds=new Set(TICKETS.map(function(t){return t.id;}));
   var sys='You are a help desk data extractor for Smalley IT. Use Microsoft 365 to search for recent help desk ticket emails. Return ONLY a JSON array. Fields: id,subject,requester,assigned,status,priority,created,due,category. If nothing found return [].';
   fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
     body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:2000,system:sys,
       messages:[{role:'user',content:'Search M365 for Smalley help desk tickets in the last '+intervalMin+' minutes. Return JSON.'}],
       mcp_servers:[{type:'url',url:'https://microsoft365.mcp.claude.com/mcp',name:'microsoft365'}]
@@ -631,7 +631,7 @@ function ask(q){
   var slim=TICKETS.map(function(t){return{id:t.id,cat:t.cat,subj:t.subj,req:t.req,asgn:t.asgn,status:t.status,pri:t.pri,created:t.created,due:t.due,desc:(t.desc||'').substring(0,150),notes:(t.notes||[]).map(function(n){return n.by+': '+(n.text||'').substring(0,120);}).join(' | ')};});
   var sys='You are an IT help desk analyst for Smalley (Lake Zurich IL). '+TICKETS.length+' tickets of '+totalTicketCount+' total. Answer in 2-4 sentences max unless a list is needed. Data: '+JSON.stringify(slim);
   fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
     body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})
   }).then(function(r){return r.json();})
   .then(function(d){document.getElementById('aiR').innerHTML=((d.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join(''))||'No response.';})
