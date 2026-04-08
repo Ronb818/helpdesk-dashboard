@@ -114,6 +114,9 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
     <h2>Setup - Help Desk Dashboard</h2>
     <p>Enter your <strong>Anthropic API key</strong> for AI Q&amp;A and auto-refresh. Stored only in your browser — never sent to GitHub.</p>
     <input type="password" id="apiKeyInput" placeholder="sk-ant-..."/>
+    <p style="font-size:12px;color:#555;font-weight:500;margin-bottom:4px">GitHub Token (for shared data)</p>
+    <p style="font-size:12px;color:#888;margin-bottom:6px">Allows your refresh to update the dashboard for everyone. Create at github.com/settings/tokens — needs <strong>repo</strong> scope.</p>
+    <input type="password" id="ghTokenInput" placeholder="ghp_..."/>
     <p style="font-size:12px;color:#888;margin-bottom:8px">Auto-refresh interval:</p>
     <div id="intervalSelect" style="margin-bottom:14px">
       <span class="int-opt" data-val="5">5 min</span>
@@ -135,6 +138,7 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
   </div>
   <div class="hdr-right">
     <span class="badge b-live" id="statusBadge">● Live</span>
+    <span id="shareStatus" style="font-size:11px;color:#3B6D11;font-weight:500"></span>
     <button class="btn btn-primary" id="hdRefreshBtn" onclick="refreshFromHelpDesk()">↻ Refresh from Help Desk</button>
     <button class="btn" onclick="manualRefresh()">↻ AI Refresh</button>
     <button class="btn" onclick="openSetup()">⚙ Settings</button>
@@ -232,6 +236,7 @@ var TICKETS=[], activeFilter='all', searchQuery='', apiKey='', intervalMin=15;
 var refreshTimer=null, countdownTimer=null, nextRefreshAt=null;
 var openDetailRow=null, totalTicketCount=2314;
 var HD='https://helpdesk.smalley.com';
+var GH_TOKEN='', GH_REPO='Ronb818/helpdesk-dashboard';
 
 var SEED=[
 {id:'69534',cat:'Request',subj:'Addition to PRD Environment - BOL Tracked Not Invoiced Email',req:'Keith Schaecher',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 11:17 AM',due:'-',pri:'Medium',desc:'',notes:[]},
@@ -516,6 +521,8 @@ function receiveHDData(requests,total){
   toast('Loaded '+refreshed.length+' tickets from help desk');
   var ov=document.getElementById('bm-overlay');
   if(ov) ov.style.display='none';
+  // Push shared data to GitHub so others see it too
+  if(GH_TOKEN) pushToGitHub();
 }
 function showBMInstructions(popupOpened){
   var bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nThis bookmark must be clicked while on the Help Desk tab (helpdesk.smalley.com).\\n\\nSteps:\\n1. Click Refresh from Help Desk on the dashboard\\n2. Wait for the help desk tab to load\\n3. Switch to the help desk tab\\n4. Click this bookmark');return;}var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var q=encodeURIComponent(JSON.stringify({list_info:{row_count:'100',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(!reqs.length){alert('No tickets returned. Please make sure you are logged in.');return;}var total=d.list_info&&d.list_info.total_count?parseInt(d.list_info.total_count):reqs.length;var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:reqs,total:total},'*');alert('Done! Sent '+reqs.length+' tickets to your dashboard.');}else{alert('Dashboard window not found.\\nClick Refresh from Help Desk on the dashboard first.');}}).catch(function(e){alert('Error: '+e.message);});})();";
@@ -547,7 +554,53 @@ function showBMInstructions(popupOpened){
 }
 </script>
 <script>
-// ── Auto-refresh (AI) ──────────────────────────────────────────────────────
+// ── Push shared data to GitHub ─────────────────────────────────────────────
+function pushToGitHub(){
+  if(!GH_TOKEN) return;
+  var payload={tickets:TICKETS, totalCount:totalTicketCount, lastUpdated:new Date().toISOString()};
+  var content=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  var apiUrl='https://api.github.com/repos/'+GH_REPO+'/contents/data.json';
+  // Get current SHA first (needed to update existing file)
+  fetch(apiUrl,{headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(existing){
+      var body={message:'Update ticket data - '+new Date().toLocaleString(),content:content};
+      if(existing&&existing.sha) body.sha=existing.sha;
+      return fetch(apiUrl,{method:'PUT',
+        headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      });
+    })
+    .then(function(r){
+      if(r&&r.ok){
+        document.getElementById('shareStatus').textContent='Shared data updated ✓';
+        setTimeout(function(){document.getElementById('shareStatus').textContent='';},4000);
+      }
+    })
+    .catch(function(e){console.warn('GitHub push failed:',e.message);});
+}
+
+// ── Load shared data from GitHub on page load ──────────────────────────────
+function loadSharedData(callback){
+  var url='https://raw.githubusercontent.com/'+GH_REPO+'/main/data.json?cb='+Date.now();
+  fetch(url)
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(d){
+      if(d&&d.tickets&&d.tickets.length){
+        TICKETS=d.tickets;
+        if(d.totalCount) totalTicketCount=d.totalCount;
+        // Show when data was last pushed
+        if(d.lastUpdated){
+          var dt=new Date(d.lastUpdated);
+          document.getElementById('lastUpdated').textContent='Shared data from '+dt.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        }
+        localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
+        localStorage.setItem('hd_total_count',String(totalTicketCount));
+      }
+      callback();
+    })
+    .catch(function(){callback();});
+}
 function startRefreshCycle(){
   clearInterval(refreshTimer); clearInterval(countdownTimer);
   if(!apiKey){
@@ -643,12 +696,14 @@ function ask(q){
 function openSetup(){document.getElementById('setupModal').style.display='flex';}
 function saveSetup(){
   var k=document.getElementById('apiKeyInput').value.trim();
+  var gh=document.getElementById('ghTokenInput').value.trim();
   var sel=document.querySelector('#intervalSelect .int-opt.active');
   if(k){apiKey=k;localStorage.setItem('hd_api_key',k);}
+  if(gh){GH_TOKEN=gh;localStorage.setItem('hd_gh_token',gh);}
   if(sel){intervalMin=parseInt(sel.dataset.val);localStorage.setItem('hd_interval',intervalMin);}
   document.getElementById('setupModal').style.display='none';
   startRefreshCycle();
-  if(k) toast('API key saved. Auto-refresh every '+intervalMin+' min.');
+  if(k||gh) toast('Settings saved.'+(gh?' Shared data enabled.':''));
 }
 function skipSetup(){document.getElementById('setupModal').style.display='none';startRefreshCycle();}
 document.querySelectorAll('#intervalSelect .int-opt').forEach(function(el){
@@ -661,20 +716,32 @@ document.querySelectorAll('#intervalSelect .int-opt').forEach(function(el){
 // ── Init ───────────────────────────────────────────────────────────────────
 window.onload=function(){
   apiKey=localStorage.getItem('hd_api_key')||'';
+  GH_TOKEN=localStorage.getItem('hd_gh_token')||'';
   intervalMin=parseInt(localStorage.getItem('hd_interval')||'15');
-  var saved=localStorage.getItem('hd_tickets');
-  TICKETS=saved?JSON.parse(saved):SEED;
+  // Pre-fill settings inputs if keys exist
+  if(apiKey) document.getElementById('apiKeyInput').value=apiKey;
+  if(GH_TOKEN) document.getElementById('ghTokenInput').value=GH_TOKEN;
   var savedTotal=localStorage.getItem('hd_total_count');
   if(savedTotal) totalTicketCount=parseInt(savedTotal);
   document.querySelectorAll('.int-opt[data-val]').forEach(function(el){
     el.classList.toggle('active',parseInt(el.dataset.val)===intervalMin);
   });
-  var lr=localStorage.getItem('hd_last_refresh');
-  if(lr){document.getElementById('lastUpdated').textContent='Last refreshed '+new Date(parseInt(lr)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
-  else{document.getElementById('lastUpdated').textContent='Apr 8, 2026 snapshot';}
-  if(apiKey) document.getElementById('setupModal').style.display='none';
-  renderAll();
-  startRefreshCycle();
+  if(apiKey||GH_TOKEN) document.getElementById('setupModal').style.display='none';
+  // Always try to load shared data from GitHub first, fall back to localStorage/seed
+  loadSharedData(function(){
+    if(!TICKETS.length){
+      var saved=localStorage.getItem('hd_tickets');
+      TICKETS=saved?JSON.parse(saved):SEED;
+    }
+    var lr=localStorage.getItem('hd_last_refresh');
+    if(lr&&!document.getElementById('lastUpdated').textContent.includes('Shared')){
+      document.getElementById('lastUpdated').textContent='Last refreshed '+new Date(parseInt(lr)).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    } else if(!lr) {
+      document.getElementById('lastUpdated').textContent='Apr 8, 2026 snapshot';
+    }
+    renderAll();
+    startRefreshCycle();
+  });
 };
 </script>
 </body>
