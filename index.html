@@ -14,38 +14,53 @@ header h1{font-size:15px;font-weight:500}
 .badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500;white-space:nowrap}
 .b-live{background:#EAF3DE;color:#3B6D11}
 .b-refreshing{background:#EEEDFE;color:#534AB7}
-.b-stale{background:#FAEEDA;color:#854F0B}
 .b-error{background:#FCEBEB;color:#A32D2D}
 .btn{font-size:12px;padding:5px 12px;border:0.5px solid #d0cec8;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit;white-space:nowrap}
 .btn:hover{background:#f0efe8}
 .btn-primary{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
 .btn-primary:hover{background:#e0dffe}
-.main{max-width:1200px;margin:0 auto;padding:16px 20px}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.main{max-width:1300px;margin:0 auto;padding:14px 20px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
 .kpi{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:12px 14px}
 .kpi-label{font-size:10px;color:#888;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
 .kpi-val{font-size:24px;font-weight:500}
 .kpi-sub{font-size:10px;color:#aaa;margin-top:2px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .card{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:14px 16px}
 .card h2{font-size:12px;font-weight:500;margin-bottom:10px;color:#555}
 .bar-wrap{display:flex;flex-direction:column;gap:7px}
 .bar-row{display:flex;align-items:center;gap:8px;font-size:12px}
 .bar-label{width:130px;color:#666;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar-track{flex:1;height:7px;background:#f0efe8;border-radius:4px;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s}
 .bar-count{color:#888;font-size:11px;min-width:24px;text-align:right}
 </style>
 </head>
 <style>
-.full-card{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;margin-bottom:16px}
-.full-card-hdr{font-size:12px;font-weight:500;color:#555;padding:12px 16px;border-bottom:0.5px solid #e0ded6;display:flex;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:4px;margin-bottom:14px}
+.tab{font-size:12px;padding:5px 13px;border-radius:20px;border:0.5px solid #d0cec8;background:#fff;cursor:pointer;color:#666;font-family:inherit}
+.tab.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
+.view{display:none}.view.active{display:block}
+/* ── Search bar ── */
+.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap input{width:100%;font-size:13px;padding:8px 12px 8px 34px;border:0.5px solid #d0cec8;border-radius:8px;outline:none;font-family:inherit;background:#fff}
+.search-wrap input:focus{border-color:#7F77DD;box-shadow:0 0 0 3px rgba(127,119,221,.1)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px;pointer-events:none}
+.search-meta{font-size:11px;color:#888;margin-top:6px;margin-bottom:10px}
+.search-meta strong{color:#534AB7}
+/* ── Filter chips ── */
+.fc{font-size:11px;padding:3px 9px;border-radius:20px;border:0.5px solid #d0cec8;background:#fafaf7;cursor:pointer;color:#555;display:inline-block;margin:0 4px 6px 0}
+.fc.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
+/* ── Ticket table ── */
+.full-card{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;margin-bottom:14px}
+.full-card-hdr{font-size:12px;font-weight:500;color:#555;padding:10px 14px;border-bottom:0.5px solid #e0ded6;display:flex;align-items:center;justify-content:space-between}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{text-align:left;font-size:10px;font-weight:500;color:#888;padding:7px 10px;border-bottom:0.5px solid #e0ded6;background:#fafaf7;text-transform:uppercase;letter-spacing:.3px}
-td{padding:7px 10px;border-bottom:0.5px solid #f0efe8;vertical-align:middle}
+td{padding:7px 10px;border-bottom:0.5px solid #f0efe8;vertical-align:top}
+tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafaf7}
 .t-subj{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t-notes-snippet{max-width:180px;font-size:11px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pill{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
 .p-open{background:#E6F1FB;color:#185FA5}
 .p-prog{background:#EEEDFE;color:#534AB7}
@@ -55,40 +70,52 @@ tr:hover td{background:#fafaf7}
 .p-high{background:#FCEBEB;color:#A32D2D}
 .p-med{background:#E6F1FB;color:#185FA5}
 .p-low{background:#f0efe8;color:#666}
-.tabs{display:flex;gap:4px;margin-bottom:14px}
-.tab{font-size:12px;padding:5px 13px;border-radius:20px;border:0.5px solid #d0cec8;background:#fff;cursor:pointer;color:#666;font-family:inherit}
-.tab.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
-.view{display:none}.view.active{display:block}
-.fc{font-size:11px;padding:3px 9px;border-radius:20px;border:0.5px solid #d0cec8;background:#fafaf7;cursor:pointer;color:#555;display:inline-block;margin:0 4px 6px 0}
-.fc.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
-.chat-box{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;margin-bottom:16px}
-.chat-hdr{font-size:12px;font-weight:500;color:#555;padding:12px 16px;border-bottom:0.5px solid #e0ded6;display:flex;align-items:center;gap:8px}
+/* ── Expandable detail row ── */
+.detail-row td{padding:0;border-bottom:0.5px solid #e0ded6}
+.detail-row.hidden{display:none}
+.detail-box{background:#fafaf7;padding:12px 14px;border-left:3px solid #7F77DD}
+.detail-box h4{font-size:11px;font-weight:500;color:#534AB7;margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+.detail-box p{font-size:12px;color:#444;line-height:1.65;white-space:pre-wrap;word-break:break-word}
+.detail-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.detail-note{background:#fff;border:0.5px solid #e0ded6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.detail-note-meta{font-size:11px;color:#888;margin-bottom:4px}
+.detail-note-body{font-size:12px;color:#1a1a18;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.notes-loading{font-size:12px;color:#888;padding:8px 0;display:flex;align-items:center;gap:6px}
+.notes-empty{font-size:12px;color:#aaa;padding:6px 0;font-style:italic}
+.load-notes-btn{font-size:11px;padding:2px 8px;border:0.5px solid #7F77DD;border-radius:6px;background:#EEEDFE;color:#534AB7;cursor:pointer;font-family:inherit;margin-left:6px}
+.load-notes-btn:hover{background:#d8d6fe}
+/* ── Chat ── */
+.chat-box{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;margin-bottom:14px}
+.chat-hdr{font-size:12px;font-weight:500;color:#555;padding:10px 14px;border-bottom:0.5px solid #e0ded6;display:flex;align-items:center;gap:8px}
 .ai-tag{background:#EEEDFE;color:#534AB7;font-size:10px;padding:2px 7px;border-radius:10px}
-.chat-msgs{padding:12px 16px;min-height:60px;max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.chat-msgs{padding:12px 14px;min-height:60px;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
 .msg{font-size:13px;line-height:1.6;padding:8px 11px;border-radius:8px;max-width:88%}
 .msg-u{background:#EEEDFE;color:#3C3489;align-self:flex-end}
 .msg-a{background:#f5f5f0;color:#1a1a18;align-self:flex-start;white-space:pre-wrap}
-.chat-input{display:flex;gap:8px;padding:10px 16px;border-top:0.5px solid #e0ded6}
+.chat-input{display:flex;gap:8px;padding:10px 14px;border-top:0.5px solid #e0ded6}
 .chat-input input{flex:1;font-size:13px;padding:7px 11px;border:0.5px solid #d0cec8;border-radius:8px;outline:none;font-family:inherit}
 .chat-input input:focus{border-color:#7F77DD}
 .chat-input button{padding:7px 14px;font-size:12px;border:0.5px solid #7F77DD;border-radius:8px;background:#EEEDFE;color:#534AB7;cursor:pointer;font-family:inherit}
-.sugs{display:flex;flex-wrap:wrap;padding:0 16px 10px;gap:5px}
+.sugs{display:flex;flex-wrap:wrap;padding:0 14px 10px;gap:5px}
 .sug{font-size:11px;padding:3px 9px;border:0.5px solid #d0cec8;border-radius:20px;background:#fafaf7;cursor:pointer;color:#555}
 .sug:hover{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
 .spinner{display:inline-block;width:12px;height:12px;border:2px solid #ccc;border-top-color:#7F77DD;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.refresh-bar{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:10px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+/* ── Refresh bar ── */
+.refresh-bar{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .refresh-info{font-size:12px;color:#666}
 .refresh-info strong{color:#1a1a18;font-weight:500}
 .countdown{font-size:11px;color:#888;margin-top:2px}
-.new-tickets{background:#EAF3DE;border:0.5px solid #9FE1CB;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:none}
-.new-tickets h3{font-size:12px;font-weight:500;color:#085041;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+/* ── New alert ── */
+.new-tickets{background:#EAF3DE;border:0.5px solid #9FE1CB;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:none}
+.new-tickets h3{font-size:12px;font-weight:500;color:#085041;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .new-dot{width:8px;height:8px;background:#3B6D11;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* ── Setup modal ── */
 .setup-modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:999}
 .setup-card{background:#fff;border-radius:12px;padding:24px;max-width:420px;width:90%;box-shadow:0 4px 24px rgba(0,0,0,.12)}
 .setup-card h2{font-size:15px;font-weight:500;margin-bottom:8px}
-.setup-card p{font-size:13px;color:#666;line-height:1.6;margin-bottom:16px}
+.setup-card p{font-size:13px;color:#666;line-height:1.6;margin-bottom:14px}
 .setup-card input{width:100%;font-size:13px;padding:8px 11px;border:0.5px solid #d0cec8;border-radius:8px;outline:none;font-family:inherit;margin-bottom:10px}
 .setup-card input:focus{border-color:#7F77DD}
 .setup-card .row{display:flex;gap:8px}
@@ -97,16 +124,15 @@ tr:hover td{background:#fafaf7}
 .int-opt.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
 .toast{position:fixed;bottom:20px;right:20px;background:#3B6D11;color:#fff;font-size:12px;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;max-width:300px}
 .toast.show{opacity:1}
-@media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.hdr-right{width:100%}}
+@media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.hdr-right{width:100%}.detail-cols{grid-template-columns:1fr}}
 </style>
 <body>
-<!-- Setup Modal -->
 <div class="setup-modal" id="setupModal">
   <div class="setup-card">
-    <h2>Setup — Help Desk Dashboard</h2>
-    <p>Enter your <strong>Anthropic API key</strong> to enable AI Q&amp;A and auto-refresh. It's stored only in your browser (localStorage) and never sent to GitHub.</p>
+    <h2>Setup - Help Desk Dashboard</h2>
+    <p>Enter your <strong>Anthropic API key</strong> for AI Q&amp;A and auto-refresh. Stored only in your browser — never sent to GitHub.</p>
     <input type="password" id="apiKeyInput" placeholder="sk-ant-..." />
-    <p style="font-size:12px;color:#888;margin-bottom:12px">Auto-refresh interval:</p>
+    <p style="font-size:12px;color:#888;margin-bottom:10px">Auto-refresh interval:</p>
     <div class="interval-select" id="intervalSelect">
       <span class="int-opt" data-val="5">5 min</span>
       <span class="int-opt active" data-val="15">15 min</span>
@@ -119,13 +145,10 @@ tr:hover td{background:#fafaf7}
     </div>
   </div>
 </div>
-
-<!-- Toast -->
 <div class="toast" id="toast"></div>
-
 <header>
   <div>
-    <h1>Smalley IT — Help Desk Dashboard</h1>
+    <h1>Smalley IT - Help Desk Dashboard</h1>
     <div class="sub">helpdesk.smalley.com &nbsp;·&nbsp; Dept 380 &nbsp;·&nbsp; <span id="lastUpdated">Loading...</span></div>
   </div>
   <div class="hdr-right">
@@ -135,9 +158,7 @@ tr:hover td{background:#fafaf7}
     <a href="https://helpdesk.smalley.com/WOListView.do" target="_blank"><button class="btn">Open Help Desk ↗</button></a>
   </div>
 </header>
-
 <div class="main">
-  <!-- Refresh status bar -->
   <div class="refresh-bar">
     <div>
       <div class="refresh-info">Auto-refresh: <strong id="refreshStatus">Setting up...</strong></div>
@@ -151,13 +172,10 @@ tr:hover td{background:#fafaf7}
       <span class="int-opt" data-val="60" onclick="changeInterval(60,this)" style="margin:0">60m</span>
     </div>
   </div>
-
-  <!-- New tickets alert -->
   <div class="new-tickets" id="newTicketsAlert">
     <h3><span class="new-dot"></span> New ticket activity detected</h3>
     <div id="newTicketsList" style="font-size:12px;color:#085041;line-height:1.8"></div>
   </div>
-
   <div class="tabs">
     <button class="tab active" onclick="switchTab('overview',this)">Overview</button>
     <button class="tab" onclick="switchTab('tickets',this)">All Tickets</button>
@@ -167,9 +185,9 @@ tr:hover td{background:#fafaf7}
   <div id="tab-overview" class="view active">
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-label">Total Tickets</div><div class="kpi-val">2,314</div><div class="kpi-sub">All time</div></div>
-      <div class="kpi"><div class="kpi-label">Open / In Progress</div><div class="kpi-val" id="kpiOpen">—</div><div class="kpi-sub">Active now</div></div>
-      <div class="kpi"><div class="kpi-label">Resolved</div><div class="kpi-val" id="kpiResolved">—</div><div class="kpi-sub">This snapshot</div></div>
-      <div class="kpi"><div class="kpi-label">High Priority Open</div><div class="kpi-val" id="kpiHigh">—</div><div class="kpi-sub">Needs attention</div></div>
+      <div class="kpi"><div class="kpi-label">Open / In Progress</div><div class="kpi-val" id="kpiOpen">-</div><div class="kpi-sub">Active now</div></div>
+      <div class="kpi"><div class="kpi-label">Resolved</div><div class="kpi-val" id="kpiResolved">-</div><div class="kpi-sub">This snapshot</div></div>
+      <div class="kpi"><div class="kpi-label">High Priority Open</div><div class="kpi-val" id="kpiHigh">-</div><div class="kpi-sub">Needs attention</div></div>
     </div>
     <div class="row2">
       <div class="card"><h2>Status breakdown</h2><div class="bar-wrap" id="statusBars"></div></div>
@@ -180,9 +198,15 @@ tr:hover td{background:#fafaf7}
       <div class="card"><h2>Priority breakdown</h2><div class="bar-wrap" id="priBars"></div></div>
     </div>
   </div>
-
   <!-- Tickets tab -->
   <div id="tab-tickets" class="view">
+    <!-- Search bar -->
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="searchInput" placeholder="Search by subject, requester, assignee, status, category, or notes..." oninput="onSearch()"/>
+    </div>
+    <div class="search-meta" id="searchMeta"></div>
+    <!-- Filter chips -->
     <div style="margin-bottom:10px">
       <span class="fc active" data-f="all" onclick="filterTix(this)">All</span>
       <span class="fc" data-f="open" onclick="filterTix(this)">Open</span>
@@ -197,18 +221,21 @@ tr:hover td{background:#fafaf7}
         <span style="font-weight:400;color:#aaa;font-size:11px" id="tixRange"></span>
       </div>
       <div style="overflow-x:auto"><table>
-        <thead><tr><th>ID</th><th>Category</th><th>Subject</th><th>Requester</th><th>Assigned To</th><th>Status</th><th>Priority</th><th>Created</th><th>Due By</th></tr></thead>
+        <thead><tr>
+          <th>ID</th><th>Category</th><th>Subject</th><th>Requester</th>
+          <th>Assigned To</th><th>Status</th><th>Priority</th>
+          <th>Notes</th><th>Created</th><th>Due By</th>
+        </tr></thead>
         <tbody id="tixBody"></tbody>
       </table></div>
     </div>
   </div>
-
   <!-- AI tab -->
   <div id="tab-ai" class="view">
     <div class="chat-box">
       <div class="chat-hdr">AI Analyst <span class="ai-tag">Claude</span></div>
       <div class="chat-msgs" id="chatMsgs">
-        <div class="msg msg-a">Hi Ron — tickets are loaded. Ask me anything about the queue, workloads, Infor issues, overdue items, or patterns.</div>
+        <div class="msg msg-a">Hi Ron — tickets are loaded. Ask me anything about the queue, workloads, Infor issues, overdue items, or patterns. Notes are searchable too once loaded.</div>
       </div>
       <div class="sugs">
         <span class="sug" onclick="ask(this.textContent)">Who has the most open tickets?</span>
@@ -226,51 +253,54 @@ tr:hover td{background:#fafaf7}
   </div>
 </div>
 <script>
-const HD = 'https://helpdesk.smalley.com/WOListView.do';
-let TICKETS = [], activeFilter = 'all', apiKey = '', intervalMin = 15;
-let refreshTimer = null, countdownTimer = null, nextRefreshAt = null;
+const HD='https://helpdesk.smalley.com';
+let TICKETS=[],activeFilter='all',searchQuery='',apiKey='',intervalMin=15;
+let refreshTimer=null,countdownTimer=null,nextRefreshAt=null;
+let openDetailRow=null;
 
-const SEED = [
-  {id:'69534',cat:'Request',subj:'Addition to PRD Environment - BOL Tracked Not Invoiced Email',req:'Keith Schaecher',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 11:17 AM',due:'-',pri:'Medium'},
-  {id:'69533',cat:'Request',subj:'ESF-12 IT Support - Crocker',req:'Abby Gay',asgn:'Tatyana Herrera',status:'Open - In Progress',created:'Apr 8, 2026 11:02 AM',due:'Apr 13, 2026',pri:'Medium'},
-  {id:'69532',cat:'Incident',subj:'Infor Request',req:'Jody Tennyson',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 10:14 AM',due:'Apr 9, 2026',pri:'High'},
-  {id:'69531',cat:'Incident',subj:'General Request: Certs not showing up in MetalTrace',req:'Jamie Madison',asgn:'Rob Jeanquart',status:'Open',created:'Apr 8, 2026 09:22 AM',due:'-',pri:'High'},
-  {id:'69530',cat:'Request',subj:'Print quality poor',req:'Justin Paulina',asgn:'Khoi Dinh',status:'On Hold - Waiting on Vendor',created:'Apr 8, 2026 08:48 AM',due:'-',pri:'Medium'},
-  {id:'69529',cat:'Email',subj:'ASN Required from Supplier: C4242Y0',req:'Harvey Kost',asgn:'Harvey Kost',status:'Open',created:'Apr 8, 2026 08:33 AM',due:'Apr 13, 2026',pri:'Medium'},
-  {id:'69528',cat:'Request',subj:'RODNEY APONTE INFOR PASSWORD RESET',req:'Rudy Cadena',asgn:'Tatyana Herrera',status:'Resolved',created:'Apr 8, 2026 08:22 AM',due:'-',pri:'Medium'},
-  {id:'69527',cat:'Incident',subj:'Customer Service voicemail +386 820 28598',req:'Debbie Fiegen',asgn:'Todd Rejman',status:'Resolved',created:'Apr 8, 2026 07:42 AM',due:'Apr 15, 2026',pri:'Low'},
-  {id:'69526',cat:'Incident',subj:'Phone Issue: Add Marketing Member',req:'Lauren Nagys',asgn:'Todd Rejman',status:'Resolved',created:'Apr 8, 2026 07:37 AM',due:'-',pri:'Medium'},
-  {id:'69524',cat:'Break/Fix',subj:'Toner',req:'Daniel Vazquez',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 8, 2026 05:17 AM',due:'-',pri:'Medium'},
-  {id:'69523',cat:'Break/Fix',subj:'Infor form authorization',req:'Marina Shulman',asgn:'Marina Shulman',status:'Resolved',created:'Apr 7, 2026 06:23 PM',due:'Apr 12, 2026',pri:'Medium'},
-  {id:'69522',cat:'Incident',subj:'Printer Issue',req:'Amanda Bychowski',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 04:19 PM',due:'Apr 9, 2026',pri:'High'},
-  {id:'69521',cat:'Break/Fix',subj:'Frozen video meetings - choppy audio',req:'Kim Ramos',asgn:'Zaki Raza',status:'Open - In Progress',created:'Apr 7, 2026 03:38 PM',due:'Apr 12, 2026',pri:'Medium'},
-  {id:'69520',cat:'Request',subj:'Fw: MTR Containment',req:'Renz Tabilian',asgn:'Rob Jeanquart',status:'Open - In Progress',created:'Apr 7, 2026 03:24 PM',due:'Apr 12, 2026',pri:'Medium'},
-  {id:'69519',cat:'Incident',subj:'AS400 - Need Access',req:'Ashton Janakos',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 02:49 PM',due:'Apr 13, 2026',pri:'Medium'},
-  {id:'69518',cat:'Break/Fix',subj:'Need 4 of each by end of week',req:'Steve Schuth',asgn:'Khoi Dinh',status:'Open - In Progress',created:'Apr 7, 2026 02:03 PM',due:'-',pri:'Medium'},
-  {id:'69517',cat:'Request',subj:'Travel Notification',req:'Frank Naugo',asgn:'Tatyana Herrera',status:'Resolved',created:'Apr 7, 2026 01:56 PM',due:'-',pri:'Medium'},
-  {id:'69516',cat:'Incident',subj:'PO CN-6880. PN ES-40-S16',req:'Debbie Fiegen',asgn:'Todd Rejman',status:'Open',created:'Apr 7, 2026 01:42 PM',due:'Apr 12, 2026',pri:'Medium'},
-  {id:'69515',cat:'Break/Fix',subj:'TEST-ERP-CRM10 server',req:'Rob Jeanquart',asgn:'Todd Rejman',status:'Resolved',created:'Apr 7, 2026 11:25 AM',due:'Apr 12, 2026',pri:'Medium'},
-  {id:'69514',cat:'Break/Fix',subj:'FW: GEAE AIRCRAFT ENGINES Collections',req:'Estela Buff',asgn:'Todd Rejman',status:'Resolved',created:'Apr 7, 2026 11:10 AM',due:'Apr 12, 2026',pri:'Medium'},
-  {id:'69513',cat:'Incident',subj:'Printing Queue',req:'Valerie Hoffman',asgn:'Khoi Dinh',status:'Closed',created:'Apr 7, 2026 11:08 AM',due:'-',pri:'Medium'},
-  {id:'69512',cat:'Request',subj:'Printer 207',req:'Liliana Chudy',asgn:'Tatyana Herrera',status:'On Hold - Waiting on Vendor',created:'Apr 7, 2026 10:58 AM',due:'-',pri:'Medium'},
-  {id:'69511',cat:'Request',subj:'Camera not responding 81HL',req:'Charles Czerak',asgn:'Zaki Raza',status:'Resolved',created:'Apr 7, 2026 09:32 AM',due:'-',pri:'High'},
-  {id:'69510',cat:'Request',subj:'Toner replenish PRT 197',req:'Justin Paulina',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 09:30 AM',due:'-',pri:'Medium'},
-  {id:'69509',cat:'Request',subj:'MTR Creator',req:'Jannah Yusuf',asgn:'Zaki Raza',status:'Resolved',created:'Apr 7, 2026 09:27 AM',due:'-',pri:'High'}
+const SEED=[
+{id:'69534',cat:'Request',subj:'Addition to PRD Environment - BOL Tracked Not Invoiced Email',req:'Keith Schaecher',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 11:17 AM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69533',cat:'Request',subj:'ESF-12 IT Support - Crocker',req:'Abby Gay',asgn:'Tatyana Herrera',status:'Open - In Progress',created:'Apr 8, 2026 11:02 AM',due:'Apr 13, 2026',pri:'Medium',desc:'',notes:[]},
+{id:'69532',cat:'Incident',subj:'Infor Request',req:'Jody Tennyson',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 10:14 AM',due:'Apr 9, 2026',pri:'High',desc:'Error on SML MTR creator Material Cert Request for 2 of 5 lot numbers. Corrections applied through MTR Creator but certs still not showing on Infor.',notes:[{by:'Marina Shulman',time:'Apr 8, 2026 12:04 PM',text:'This was noticed, but MTR does not show corrections. Can you please check on your end on MTR?'}]},
+{id:'69531',cat:'Incident',subj:'General Request: Certs not showing up in MetalTrace',req:'Jamie Madison',asgn:'Rob Jeanquart',status:'Open',created:'Apr 8, 2026 09:22 AM',due:'-',pri:'High',desc:'',notes:[]},
+{id:'69530',cat:'Request',subj:'Print quality poor',req:'Justin Paulina',asgn:'Khoi Dinh',status:'On Hold - Waiting on Vendor',created:'Apr 8, 2026 08:48 AM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69529',cat:'Email',subj:'ASN Required from Supplier: C4242Y0',req:'Harvey Kost',asgn:'Harvey Kost',status:'Open',created:'Apr 8, 2026 08:33 AM',due:'Apr 13, 2026',pri:'Medium',desc:'',notes:[]},
+{id:'69528',cat:'Request',subj:'RODNEY APONTE INFOR PASSWORD RESET',req:'Rudy Cadena',asgn:'Tatyana Herrera',status:'Resolved',created:'Apr 8, 2026 08:22 AM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69527',cat:'Incident',subj:'Customer Service voicemail +386 820 28598',req:'Debbie Fiegen',asgn:'Todd Rejman',status:'Resolved',created:'Apr 8, 2026 07:42 AM',due:'Apr 15, 2026',pri:'Low',desc:'Customer Service has a new voicemail from +386 820 28598 - 0:49',notes:[{by:'Debbie Fiegen',time:'Apr 8, 2026 09:54 AM',text:'Voicemail received from unknown international number. Duration 0:49. Please review and advise.'}]},
+{id:'69526',cat:'Incident',subj:'Phone Issue: Add Marketing Member',req:'Lauren Nagys',asgn:'Todd Rejman',status:'Resolved',created:'Apr 8, 2026 07:37 AM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69524',cat:'Break/Fix',subj:'Toner',req:'Daniel Vazquez',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 8, 2026 05:17 AM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69523',cat:'Break/Fix',subj:'Infor form authorization',req:'Marina Shulman',asgn:'Marina Shulman',status:'Resolved',created:'Apr 7, 2026 06:23 PM',due:'Apr 12, 2026',pri:'Medium',desc:'',notes:[]},
+{id:'69522',cat:'Incident',subj:'Printer Issue',req:'Amanda Bychowski',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 04:19 PM',due:'Apr 9, 2026',pri:'High',desc:'',notes:[]},
+{id:'69521',cat:'Break/Fix',subj:'Frozen video meetings - choppy audio',req:'Kim Ramos',asgn:'Zaki Raza',status:'Open - In Progress',created:'Apr 7, 2026 03:38 PM',due:'Apr 12, 2026',pri:'Medium',desc:'',notes:[]},
+{id:'69520',cat:'Request',subj:'Fw: MTR Containment',req:'Renz Tabilian',asgn:'Rob Jeanquart',status:'Open - In Progress',created:'Apr 7, 2026 03:24 PM',due:'Apr 12, 2026',pri:'Medium',desc:'',notes:[]},
+{id:'69519',cat:'Incident',subj:'AS400 - Need Access',req:'Ashton Janakos',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 02:49 PM',due:'Apr 13, 2026',pri:'Medium',desc:'',notes:[]},
+{id:'69518',cat:'Break/Fix',subj:'Need 4 of each by end of week',req:'Steve Schuth',asgn:'Khoi Dinh',status:'Open - In Progress',created:'Apr 7, 2026 02:03 PM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69517',cat:'Request',subj:'Travel Notification',req:'Frank Naugo',asgn:'Tatyana Herrera',status:'Resolved',created:'Apr 7, 2026 01:56 PM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69516',cat:'Incident',subj:'PO CN-6880. PN ES-40-S16',req:'Debbie Fiegen',asgn:'Todd Rejman',status:'Open',created:'Apr 7, 2026 01:42 PM',due:'Apr 12, 2026',pri:'Medium',desc:'',notes:[]},
+{id:'69515',cat:'Break/Fix',subj:'TEST-ERP-CRM10 server',req:'Rob Jeanquart',asgn:'Todd Rejman',status:'Resolved',created:'Apr 7, 2026 11:25 AM',due:'Apr 12, 2026',pri:'Medium',desc:'',notes:[]},
+{id:'69514',cat:'Break/Fix',subj:'FW: GEAE AIRCRAFT ENGINES Collections',req:'Estela Buff',asgn:'Todd Rejman',status:'Resolved',created:'Apr 7, 2026 11:10 AM',due:'Apr 12, 2026',pri:'Medium',desc:'',notes:[]},
+{id:'69513',cat:'Incident',subj:'Printing Queue',req:'Valerie Hoffman',asgn:'Khoi Dinh',status:'Closed',created:'Apr 7, 2026 11:08 AM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69512',cat:'Request',subj:'Printer 207',req:'Liliana Chudy',asgn:'Tatyana Herrera',status:'On Hold - Waiting on Vendor',created:'Apr 7, 2026 10:58 AM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69511',cat:'Request',subj:'Camera not responding 81HL',req:'Charles Czerak',asgn:'Zaki Raza',status:'Resolved',created:'Apr 7, 2026 09:32 AM',due:'-',pri:'High',desc:'',notes:[]},
+{id:'69510',cat:'Request',subj:'Toner replenish PRT 197',req:'Justin Paulina',asgn:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 09:30 AM',due:'-',pri:'Medium',desc:'',notes:[]},
+{id:'69509',cat:'Request',subj:'MTR Creator',req:'Jannah Yusuf',asgn:'Zaki Raza',status:'Resolved',created:'Apr 7, 2026 09:27 AM',due:'-',pri:'High',desc:'',notes:[]}
 ];
 </script>
 <script>
-// ── UI helpers ──────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function stripHtml(h){const d=document.createElement('div');d.innerHTML=h;return d.textContent||'';}
 function switchTab(name,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById('tab-'+name).classList.add('active');if(el)el.classList.add('active');}
 function toast(msg,dur=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur);}
-function setBadge(state){const b=document.getElementById('statusBadge');b.className='badge';if(state==='live'){b.classList.add('b-live');b.textContent='● Live';}else if(state==='refreshing'){b.classList.add('b-refreshing');b.innerHTML='<span class="spinner"></span>Refreshing...';}else if(state==='stale'){b.classList.add('b-stale');b.textContent='⚠ Stale';}else{b.classList.add('b-error');b.textContent='✕ Error';}}
+function setBadge(state){const b=document.getElementById('statusBadge');b.className='badge';if(state==='live'){b.classList.add('b-live');b.textContent='● Live';}else if(state==='refreshing'){b.classList.add('b-refreshing');b.innerHTML='<span class="spinner"></span>Refreshing...';}else{b.classList.add('b-error');b.textContent='✕ Error';}}
 
-// ── Rendering ───────────────────────────────────────────
+// ── Charts ───────────────────────────────────────────────────────────────
 const sColor=s=>({'Open':'#378ADD','Open - In Progress':'#7F77DD','On Hold - Waiting on Vendor':'#BA7517','Resolved':'#639922','Closed':'#888780'}[s]||'#888780');
 const cColor=c=>({'Request':'#378ADD','Incident':'#E24B4A','Break/Fix':'#BA7517','Email':'#639922'}[c]||'#888780');
 const pColor=p=>({'High':'#E24B4A','Medium':'#378ADD','Low':'#639922'}[p]||'#888780');
 function count(arr,key){const m={};arr.forEach(t=>{const v=t[key]||'?';m[v]=(m[v]||0)+1;});return Object.entries(m).sort((a,b)=>b[1]-a[1]);}
-function bars(id,entries,color){const max=entries[0]?entries[0][1]:1;document.getElementById(id).innerHTML=entries.slice(0,8).map(([l,n])=>`<div class="bar-row"><span class="bar-label" title="${l}">${l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/max*100)}%;background:${color(l)}"></div></div><span class="bar-count">${n}</span></div>`).join('');}
-function sBadge(s){const c=s.includes('Progress')?'p-prog':s.includes('Hold')?'p-hold':s==='Resolved'?'p-res':s==='Closed'?'p-closed':'p-open';return`<span class="pill ${c}">${s}</span>`;}
+function bars(id,entries,color){const max=entries[0]?entries[0][1]:1;document.getElementById(id).innerHTML=entries.slice(0,8).map(([l,n])=>`<div class="bar-row"><span class="bar-label" title="${esc(l)}">${esc(l)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/max*100)}%;background:${color(l)}"></div></div><span class="bar-count">${n}</span></div>`).join('');}
+function sBadge(s){const c=s.includes('Progress')?'p-prog':s.includes('Hold')?'p-hold':s==='Resolved'?'p-res':s==='Closed'?'p-closed':'p-open';return`<span class="pill ${c}">${esc(s)}</span>`;}
 function renderAll(){
   const o=TICKETS.filter(t=>t.status.includes('Open')||t.status.includes('Progress')).length;
   const r=TICKETS.filter(t=>t.status==='Resolved').length;
@@ -284,55 +314,193 @@ function renderAll(){
   bars('priBars',count(TICKETS,'pri'),pColor);
   renderTix();
 }
+
+// ── Search + Filter ───────────────────────────────────────────────────────
+function onSearch(){searchQuery=document.getElementById('searchInput').value.toLowerCase();renderTix();}
 function filterTix(el){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');activeFilter=el.dataset.f;renderTix();}
-function renderTix(){
-  const f=activeFilter;
-  const rows=TICKETS.filter(t=>{
-    if(f==='all')return true; if(f==='open')return t.status==='Open';
-    if(f==='prog')return t.status.includes('Progress'); if(f==='hold')return t.status.includes('Hold');
-    if(f==='res')return t.status==='Resolved'||t.status==='Closed'; if(f==='high')return t.pri==='High';
-    return true;
-  });
-  document.getElementById('tixRange').textContent=`${rows.length} of ${TICKETS.length} shown`;
-  document.getElementById('tixBody').innerHTML=rows.map(t=>`<tr>
-    <td><a href="${HD}?woMode=viewWO&woID=${t.id}" target="_blank" style="color:#185FA5">${t.id}</a></td>
-    <td>${t.cat}</td><td class="t-subj" title="${t.subj}">${t.subj}</td>
-    <td>${t.req}</td><td>${t.asgn}</td><td>${sBadge(t.status)}</td>
-    <td><span class="pill ${t.pri==='High'?'p-high':t.pri==='Low'?'p-low':'p-med'}">${t.pri}</span></td>
-    <td style="white-space:nowrap">${t.created}</td>
-    <td style="white-space:nowrap;color:${t.due!=='-'?'#A32D2D':'#aaa'}">${t.due}</td>
-  </tr>`).join('');
+
+function ticketMatchesSearch(t,q){
+  if(!q) return true;
+  const fields=[t.id,t.subj,t.req,t.asgn,t.cat,t.status,t.pri,t.desc||'',
+    (t.notes||[]).map(n=>n.text+' '+n.by).join(' ')].join(' ').toLowerCase();
+  return q.split(' ').filter(Boolean).every(word=>fields.includes(word));
+}
+function ticketMatchesFilter(t,f){
+  if(f==='all')return true;
+  if(f==='open')return t.status==='Open';
+  if(f==='prog')return t.status.includes('Progress');
+  if(f==='hold')return t.status.includes('Hold');
+  if(f==='res')return t.status==='Resolved'||t.status==='Closed';
+  if(f==='high')return t.pri==='High';
+  return true;
+}
+function highlight(text,q){
+  if(!q)return esc(text);
+  const words=q.split(' ').filter(Boolean);
+  let out=esc(text);
+  words.forEach(w=>{out=out.replace(new RegExp(esc(w),'gi'),m=>`<mark style="background:#fef08a;border-radius:2px">${m}</mark>`);});
+  return out;
 }
 </script>
 <script>
-// ── Auto-refresh engine ─────────────────────────────────
+// ── Ticket table rendering ────────────────────────────────────────────────
+function renderTix(){
+  const q=searchQuery, f=activeFilter;
+  const rows=TICKETS.filter(t=>ticketMatchesFilter(t,f)&&ticketMatchesSearch(t,q));
+  const total=TICKETS.filter(t=>ticketMatchesFilter(t,f)).length;
+  document.getElementById('tixRange').textContent=`${rows.length} of ${TICKETS.length} shown`;
+  const meta=document.getElementById('searchMeta');
+  if(q){
+    meta.innerHTML=`Search <strong>"${esc(q)}"</strong> — ${rows.length} result${rows.length!==1?'s':''} across subject, requester, assignee, status, category and notes`;
+  } else {meta.textContent='';}
+
+  let html='';
+  rows.forEach((t,i)=>{
+    const notesSnippet=t.notes&&t.notes.length>0?t.notes[0].text.substring(0,60)+'...':'';
+    const notesLoaded=t.notes&&t.notes.length>0;
+    html+=`<tr class="ticket-row" onclick="toggleDetail('${t.id}')">
+      <td><a href="${HD}/WorkOrder.do?woMode=viewWO&woID=${t.id}" target="_blank" style="color:#185FA5" onclick="event.stopPropagation()">${t.id}</a></td>
+      <td>${esc(t.cat)}</td>
+      <td class="t-subj" title="${esc(t.subj)}">${highlight(t.subj,q)}</td>
+      <td>${highlight(t.req,q)}</td>
+      <td>${highlight(t.asgn,q)}</td>
+      <td>${sBadge(t.status)}</td>
+      <td><span class="pill ${t.pri==='High'?'p-high':t.pri==='Low'?'p-low':'p-med'}">${esc(t.pri)}</span></td>
+      <td>
+        ${notesLoaded
+          ?`<span class="t-notes-snippet" title="${esc(notesSnippet)}">${highlight(notesSnippet,q)}</span>`
+          :`<button class="load-notes-btn" onclick="event.stopPropagation();loadNotes('${t.id}')">Load ↓</button>`}
+      </td>
+      <td style="white-space:nowrap">${esc(t.created)}</td>
+      <td style="white-space:nowrap;color:${t.due!=='-'?'#A32D2D':'#aaa'}">${esc(t.due)}</td>
+    </tr>
+    <tr class="detail-row hidden" id="detail-${t.id}">
+      <td colspan="10">
+        <div class="detail-box">
+          <div class="detail-cols">
+            <div>
+              <h4>Description</h4>
+              <p id="desc-${t.id}">${t.desc?highlight(t.desc,q):'<span style="color:#aaa;font-style:italic">No description loaded. Click row to refresh.</span>'}</p>
+            </div>
+            <div>
+              <h4>Notes <span id="notes-count-${t.id}" style="font-weight:400;color:#888">(${t.notes?t.notes.length:0})</span>
+                <button class="load-notes-btn" onclick="loadNotes('${t.id}')" id="reload-btn-${t.id}">↻ Reload</button>
+              </h4>
+              <div id="notes-area-${t.id}">
+                ${renderNotesHtml(t,q)}
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:#aaa">
+            <a href="${HD}/WorkOrder.do?woMode=viewWO&woID=${t.id}" target="_blank" style="color:#185FA5">Open full ticket in help desk ↗</a>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  });
+  document.getElementById('tixBody').innerHTML=html||`<tr><td colspan="10" style="text-align:center;color:#aaa;padding:20px">No tickets match.</td></tr>`;
+}
+
+function renderNotesHtml(t,q){
+  if(!t.notes||t.notes.length===0) return `<p class="notes-empty">No notes loaded — click "Load ↓" in the table row, or "↻ Reload" above.</p>`;
+  return t.notes.map(n=>`<div class="detail-note">
+    <div class="detail-note-meta">${esc(n.by)} &nbsp;·&nbsp; ${esc(n.time)}</div>
+    <div class="detail-note-body">${highlight(n.text,q)}</div>
+  </div>`).join('');
+}
+
+function toggleDetail(id){
+  const row=document.getElementById('detail-'+id);
+  if(!row)return;
+  const isOpen=!row.classList.contains('hidden');
+  if(openDetailRow&&openDetailRow!==id){
+    const prev=document.getElementById('detail-'+openDetailRow);
+    if(prev)prev.classList.add('hidden');
+  }
+  if(isOpen){row.classList.add('hidden');openDetailRow=null;}
+  else{row.classList.remove('hidden');openDetailRow=id;}
+}
+</script>
+<script>
+// ── Notes loading via help desk API ──────────────────────────────────────
+async function loadNotes(id){
+  const area=document.getElementById('notes-area-'+id);
+  const btn=document.getElementById('reload-btn-'+id);
+  if(area) area.innerHTML=`<div class="notes-loading"><span class="spinner"></span>Loading notes from help desk...</div>`;
+  if(btn) btn.textContent='Loading...';
+  try{
+    // Fetch notes list
+    const r=await fetch(`${HD}/api/v3/requests/${id}/notes?SUBREQUEST=XMLHTTP`);
+    const d=await r.json();
+    const noteList=d.notes||[];
+    if(noteList.length===0){
+      const tix=TICKETS.find(t=>t.id===id);
+      if(tix)tix.notes=[];
+      if(area)area.innerHTML=`<p class="notes-empty">No notes on this ticket.</p>`;
+      if(btn)btn.textContent='↻ Reload';
+      return;
+    }
+    // Fetch full text for each note
+    const details=await Promise.all(noteList.map(n=>
+      fetch(`${HD}/api/v3/requests/${id}/notes/${n.id}?SUBREQUEST=XMLHTTP`).then(r=>r.json()).catch(()=>({note:n}))
+    ));
+    const parsed=details.map(d=>{
+      const n=d.note||{};
+      const rawDesc=n.description||'';
+      const text=rawDesc?stripHtml(rawDesc).trim():'(no text)';
+      return{
+        by:n.added_by?n.added_by.name:'Unknown',
+        time:n.added_time?n.added_time.display_value:'',
+        text
+      };
+    });
+    // Also fetch description
+    const ticketR=await fetch(`${HD}/api/v3/requests/${id}?SUBREQUEST=XMLHTTP`).then(r=>r.json()).catch(()=>({}));
+    const desc=ticketR.request?stripHtml(ticketR.request.description||'').trim():'';
+
+    // Update ticket data
+    const tix=TICKETS.find(t=>t.id===id);
+    if(tix){tix.notes=parsed;tix.desc=desc;localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));}
+    // Update UI
+    if(area)area.innerHTML=renderNotesHtml({notes:parsed},searchQuery);
+    const descEl=document.getElementById('desc-'+id);
+    if(descEl)descEl.innerHTML=desc?highlight(desc,searchQuery):'<span style="color:#aaa;font-style:italic">No description.</span>';
+    const countEl=document.getElementById('notes-count-'+id);
+    if(countEl)countEl.textContent=`(${parsed.length})`;
+    if(btn)btn.textContent='↻ Reload';
+    // Refresh the snippet in the table row
+    renderTix();
+    toast(`Loaded ${parsed.length} note${parsed.length!==1?'s':''} for ticket ${id}`);
+  }catch(e){
+    if(area)area.innerHTML=`<p class="notes-empty">Could not load notes — must be on Smalley network. <a href="${HD}/WorkOrder.do?woMode=viewWO&woID=${id}" target="_blank" style="color:#185FA5">Open in help desk ↗</a></p>`;
+    if(btn)btn.textContent='↻ Reload';
+  }
+}
+
+// ── Auto-refresh engine ──────────────────────────────────────────────────
 function startRefreshCycle(){
-  clearInterval(refreshTimer); clearInterval(countdownTimer);
+  clearInterval(refreshTimer);clearInterval(countdownTimer);
   if(!apiKey){document.getElementById('refreshStatus').textContent='No API key — read-only';document.getElementById('countdown').textContent='';return;}
   scheduleNext();
 }
 function scheduleNext(){
-  nextRefreshAt = Date.now() + intervalMin*60*1000;
+  nextRefreshAt=Date.now()+intervalMin*60*1000;
   document.getElementById('refreshStatus').textContent=`Every ${intervalMin} min`;
   updateCountdown();
   clearInterval(countdownTimer);
-  countdownTimer = setInterval(()=>{
-    if(Date.now()>=nextRefreshAt){clearInterval(countdownTimer);doRefresh();}
-    else updateCountdown();
-  },1000);
-  refreshTimer = setTimeout(doRefresh, intervalMin*60*1000);
+  countdownTimer=setInterval(()=>{if(Date.now()>=nextRefreshAt){clearInterval(countdownTimer);doRefresh();}else updateCountdown();},1000);
+  refreshTimer=setTimeout(doRefresh,intervalMin*60*1000);
 }
 function updateCountdown(){
   if(!nextRefreshAt)return;
   const sec=Math.max(0,Math.round((nextRefreshAt-Date.now())/1000));
-  const m=Math.floor(sec/60), s=sec%60;
-  document.getElementById('countdown').textContent=`Next refresh in ${m}:${String(s).padStart(2,'0')}`;
+  document.getElementById('countdown').textContent=`Next refresh in ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;
 }
 function changeInterval(val,el){
   intervalMin=val;localStorage.setItem('hd_interval',val);
   document.querySelectorAll('.int-opt').forEach(e=>e.classList.remove('active'));
   document.querySelectorAll(`.int-opt[data-val="${val}"]`).forEach(e=>e.classList.add('active'));
-  clearTimeout(refreshTimer); startRefreshCycle();
+  clearTimeout(refreshTimer);startRefreshCycle();
 }
 async function doRefresh(){
   if(!apiKey)return;
@@ -340,69 +508,55 @@ async function doRefresh(){
   document.getElementById('refreshStatus').textContent='Refreshing...';
   try{
     const prevIds=new Set(TICKETS.map(t=>t.id));
-    const sys=`You are a help desk data extractor for Smalley IT. Use Microsoft 365 to search for recent help desk ticket emails and notifications from helpdesk.smalley.com or ServiceDesk. For each ticket found, extract: id (ticket number), subject, requester, assigned tech, status (Open/Resolved/Closed/On Hold), priority (High/Medium/Low), created date, category (Request/Incident/Break-Fix/Email). Return ONLY a JSON array, no markdown. If nothing found return [].`;
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
+    const sys=`You are a help desk data extractor for Smalley IT. Use Microsoft 365 to search for recent help desk ticket emails from helpdesk.smalley.com. Return ONLY a JSON array. Fields: id,subject,requester,assigned,status,priority,created,due,category. If nothing found return [].`;
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,system:sys,
-        messages:[{role:'user',content:'Search Microsoft 365 email for the latest Smalley help desk ticket notifications received in the last '+intervalMin+' minutes. Return new or updated tickets as JSON.'}],
+        messages:[{role:'user',content:'Search M365 for Smalley help desk tickets in the last '+intervalMin+' minutes. Return JSON.'}],
         mcp_servers:[{type:'url',url:'https://microsoft365.mcp.claude.com/mcp',name:'microsoft365'}]
       })
     });
-    const d=await r.json();
-    const txt=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const data=await r.json();
+    const txt=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
     const match=txt.match(/\[[\s\S]*\]/);
     if(match){
       const fresh=JSON.parse(match[0]);
-      if(fresh.length){
-        const newOnes=fresh.filter(t=>!prevIds.has(String(t.id)));
-        if(newOnes.length){
-          // Prepend new tickets
-          const mapped=newOnes.map(t=>({id:String(t.id||''),cat:t.category||t.cat||'Request',subj:t.subject||t.subj||'',req:t.requester||t.req||'',asgn:t.assigned||t.asgn||'',status:t.status||'Open',created:t.created||new Date().toLocaleString(),due:t.due||'-',pri:t.priority||t.pri||'Medium'}));
-          TICKETS=[...mapped,...TICKETS];
-          localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
-          showNewAlert(mapped);
-          toast(`${mapped.length} new ticket${mapped.length>1?'s':''} detected!`);
-        }
+      const newOnes=fresh.filter(t=>!prevIds.has(String(t.id)));
+      if(newOnes.length){
+        const mapped=newOnes.map(t=>({id:String(t.id||''),cat:t.category||'Request',subj:t.subject||'',req:t.requester||'',asgn:t.assigned||'',status:t.status||'Open',created:t.created||new Date().toLocaleString(),due:t.due||'-',pri:t.priority||'Medium',desc:'',notes:[]}));
+        TICKETS=[...mapped,...TICKETS];
+        localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
+        showNewAlert(mapped);
+        toast(`${mapped.length} new ticket${mapped.length>1?'s':''} detected!`);
       }
     }
-    const now=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
     document.getElementById('lastUpdated').textContent=`Last refreshed ${now}`;
     localStorage.setItem('hd_last_refresh',Date.now());
-    setBadge('live');
-    renderAll();
-  }catch(e){
-    setBadge('error');
-    console.error('Refresh failed:',e);
-  }
+    setBadge('live');renderAll();
+  }catch(e){setBadge('error');}
   scheduleNext();
 }
 function showNewAlert(tickets){
-  const box=document.getElementById('newTicketsAlert');
-  const list=document.getElementById('newTicketsList');
-  box.style.display='block';
-  list.innerHTML=tickets.map(t=>`<div>● <strong>${t.id}</strong> — ${t.subj} <span style="color:#3B6D11;font-size:10px">[${t.status}]</span></div>`).join('');
-  setTimeout(()=>{box.style.display='none';},30000);
+  document.getElementById('newTicketsAlert').style.display='block';
+  document.getElementById('newTicketsList').innerHTML=tickets.map(t=>`<div>● <strong>${t.id}</strong> — ${esc(t.subj)} <span style="color:#3B6D11;font-size:10px">[${t.status}]</span></div>`).join('');
+  setTimeout(()=>{document.getElementById('newTicketsAlert').style.display='none';},30000);
 }
-async function manualRefresh(){
-  clearTimeout(refreshTimer); clearInterval(countdownTimer);
-  nextRefreshAt=null;
-  document.getElementById('countdown').textContent='';
-  await doRefresh();
-}
+async function manualRefresh(){clearTimeout(refreshTimer);clearInterval(countdownTimer);nextRefreshAt=null;document.getElementById('countdown').textContent='';await doRefresh();}
 </script>
 <script>
-// ── AI Q&A ──────────────────────────────────────────────
+// ── AI Q&A ───────────────────────────────────────────────────────────────
 async function ask(q){
   if(!q)q=document.getElementById('chatIn').value.trim();
   if(!q)return;
   document.getElementById('chatIn').value='';
   const msgs=document.getElementById('chatMsgs');
-  msgs.innerHTML+=`<div class="msg msg-u">${q}</div>`;
+  msgs.innerHTML+=`<div class="msg msg-u">${esc(q)}</div>`;
   msgs.innerHTML+=`<div class="msg msg-a" id="aiR"><span class="spinner"></span>Analyzing...</div>`;
   msgs.scrollTop=msgs.scrollHeight;
-  if(!apiKey){document.getElementById('aiR').textContent='No API key set. Click ⚙ Settings to add one.';return;}
-  const sys=`You are an IT help desk analyst for Smalley (Lake Zurich, IL). You have the latest ${TICKETS.length} tickets from a total queue of 2,314. Answer concisely. Data: ${JSON.stringify(TICKETS)}`;
+  if(!apiKey){document.getElementById('aiR').textContent='No API key — click ⚙ Settings.';return;}
+  const tixData=TICKETS.map(t=>({...t,notesText:(t.notes||[]).map(n=>n.by+': '+n.text).join(' | ')}));
+  const sys=`You are an IT help desk analyst for Smalley (Lake Zurich, IL). You have ${TICKETS.length} tickets including description and notes where loaded. Answer concisely. Data: ${JSON.stringify(tixData)}`;
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
@@ -414,7 +568,7 @@ async function ask(q){
   msgs.scrollTop=msgs.scrollHeight;
 }
 
-// ── Setup modal ─────────────────────────────────────────
+// ── Setup ─────────────────────────────────────────────────────────────────
 function openSetup(){document.getElementById('setupModal').style.display='flex';}
 function saveSetup(){
   const k=document.getElementById('apiKeyInput').value.trim();
@@ -423,33 +577,26 @@ function saveSetup(){
   if(sel){intervalMin=parseInt(sel.dataset.val);localStorage.setItem('hd_interval',intervalMin);}
   document.getElementById('setupModal').style.display='none';
   startRefreshCycle();
-  if(k) toast('API key saved. Auto-refresh active every '+intervalMin+' min.');
+  if(k)toast('API key saved. Auto-refresh active every '+intervalMin+' min.');
 }
 function skipSetup(){document.getElementById('setupModal').style.display='none';startRefreshCycle();}
 document.querySelectorAll('#intervalSelect .int-opt').forEach(el=>{
   el.onclick=()=>{document.querySelectorAll('#intervalSelect .int-opt').forEach(e=>e.classList.remove('active'));el.classList.add('active');};
 });
 
-// ── Init ─────────────────────────────────────────────────
+// ── Init ─────────────────────────────────────────────────────────────────
 window.onload=function(){
   apiKey=localStorage.getItem('hd_api_key')||'';
   intervalMin=parseInt(localStorage.getItem('hd_interval')||'15');
   const saved=localStorage.getItem('hd_tickets');
   TICKETS=saved?JSON.parse(saved):SEED;
-
-  // Sync interval buttons
   document.querySelectorAll('.int-opt[data-val]').forEach(el=>{
     el.classList.toggle('active',parseInt(el.dataset.val)===intervalMin);
   });
-
-  // Show last refresh time
   const lr=localStorage.getItem('hd_last_refresh');
   if(lr){const d=new Date(parseInt(lr));document.getElementById('lastUpdated').textContent='Last refreshed '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
   else document.getElementById('lastUpdated').textContent='Apr 8, 2026 snapshot';
-
-  // Hide setup if key already exists
-  if(apiKey) document.getElementById('setupModal').style.display='none';
-
+  if(apiKey)document.getElementById('setupModal').style.display='none';
   renderAll();
   startRefreshCycle();
 };
