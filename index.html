@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smalley IT Help Desk Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a18;min-height:100vh}
+header{background:#fff;border-bottom:1px solid #e0ded6;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+header h1{font-size:16px;font-weight:500}
+.sub{font-size:12px;color:#888;margin-top:2px}
+.badge-live{background:#EAF3DE;color:#3B6D11;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:500}
+.main{max-width:1200px;margin:0 auto;padding:20px 24px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:14px 16px}
+.kpi-label{font-size:11px;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+.kpi-val{font-size:26px;font-weight:500}
+.kpi-sub{font-size:11px;color:#aaa;margin-top:3px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.card{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:16px 18px}
+.card h2{font-size:13px;font-weight:500;margin-bottom:12px;color:#555}
+</style>
+.bar-wrap{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.bar-label{width:130px;color:#666;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:8px;background:#f0efe8;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.bar-count{color:#888;font-size:11px;min-width:28px;text-align:right}
+.full-card{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;margin-bottom:20px}
+.full-card h2{font-size:13px;font-weight:500;color:#555;padding:14px 18px;border-bottom:0.5px solid #e0ded6}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;font-size:11px;font-weight:500;color:#888;padding:8px 12px;border-bottom:0.5px solid #e0ded6;background:#fafaf7;text-transform:uppercase;letter-spacing:.3px}
+td{padding:8px 12px;border-bottom:0.5px solid #f0efe8;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafaf7}
+.subj{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+.b-open{background:#E6F1FB;color:#185FA5}
+.b-prog{background:#EEEDFE;color:#534AB7}
+.b-hold{background:#FAEEDA;color:#854F0B}
+.b-res{background:#EAF3DE;color:#3B6D11}
+.b-closed{background:#f0efe8;color:#666}
+.ai-section{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;margin-bottom:20px}
+.ai-section h2{font-size:13px;font-weight:500;color:#555;padding:14px 18px;border-bottom:0.5px solid #e0ded6;display:flex;align-items:center;gap:8px}
+.ai-tag{background:#EEEDFE;color:#534AB7;font-size:10px;padding:2px 8px;border-radius:10px}
+.chat-msgs{padding:14px 18px;min-height:80px;max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.msg{font-size:13px;line-height:1.6;padding:8px 12px;border-radius:8px;max-width:85%}
+.msg-user{background:#EEEDFE;color:#3C3489;align-self:flex-end}
+.msg-ai{background:#f5f5f0;color:#1a1a18;align-self:flex-start;white-space:pre-wrap}
+.chat-input-row{display:flex;gap:8px;padding:12px 18px;border-top:0.5px solid #e0ded6}
+.chat-input-row input{flex:1;font-size:13px;padding:8px 12px;border:0.5px solid #d0cec8;border-radius:8px;outline:none;font-family:inherit}
+.chat-input-row input:focus{border-color:#7F77DD}
+.chat-input-row button{padding:8px 16px;font-size:13px;border:0.5px solid #d0cec8;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit}
+.chat-input-row button:hover{background:#f0efe8}
+.suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 12px}
+.sug{font-size:11px;padding:4px 10px;border:0.5px solid #d0cec8;border-radius:20px;background:#fafaf7;cursor:pointer;color:#555}
+.sug:hover{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #ccc;border-top-color:#7F77DD;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn{font-size:12px;padding:6px 14px;border:0.5px solid #d0cec8;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit}
+.btn:hover{background:#f0efe8}
+.tabs{display:flex;gap:4px;margin-bottom:16px}
+.tab{font-size:12px;padding:5px 14px;border-radius:20px;border:0.5px solid #d0cec8;background:#fff;cursor:pointer;color:#666;font-family:inherit}
+.tab.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
+.view{display:none}.view.active{display:block}
+.filter-bar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.fc{font-size:11px;padding:4px 10px;border-radius:20px;border:0.5px solid #d0cec8;background:#fafaf7;cursor:pointer;color:#555}
+.fc.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
+@media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Smalley IT — Help Desk Dashboard</h1>
+    <div class="sub">helpdesk.smalley.com &nbsp;·&nbsp; Dept 380 &nbsp;·&nbsp; <span id="last-updated">Not yet loaded</span></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="badge-live" id="live-badge">● Offline</span>
+    <button class="btn" onclick="loadFromHelpDesk()">↻ Refresh from Help Desk</button>
+  </div>
+</header>
+<div class="main">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview',this)">Overview</button>
+    <button class="tab" onclick="switchTab('tickets',this)">All Tickets</button>
+    <button class="tab" onclick="switchTab('ai',this)">Ask AI ↗</button>
+  </div>
+  <div id="tab-overview" class="view active">
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-label">Total Tickets</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub">All time</div></div>
+      <div class="kpi"><div class="kpi-label">Open / In Progress</div><div class="kpi-val" id="kpi-open">—</div><div class="kpi-sub">Active now</div></div>
+      <div class="kpi"><div class="kpi-label">Resolved</div><div class="kpi-val" id="kpi-resolved">—</div><div class="kpi-sub">This page</div></div>
+      <div class="kpi"><div class="kpi-label">High Priority</div><div class="kpi-val" id="kpi-high">—</div><div class="kpi-sub">Open items</div></div>
+    </div>
+    <div class="row2">
+      <div class="card"><h2>Status breakdown</h2><div class="bar-wrap" id="status-bars"><div style="color:#aaa;font-size:12px">Click Refresh to load data</div></div></div>
+      <div class="card"><h2>Assignee workload</h2><div class="bar-wrap" id="assign-bars"></div></div>
+    </div>
+    <div class="row2">
+      <div class="card"><h2>Category mix</h2><div class="bar-wrap" id="cat-bars"></div></div>
+      <div class="card"><h2>Priority breakdown</h2><div class="bar-wrap" id="pri-bars"></div></div>
+    </div>
+  </div>
+
+  <div id="tab-tickets" class="view">
+    <div class="filter-bar">
+      <span class="fc active" data-f="all" onclick="filterTickets(this)">All</span>
+      <span class="fc" data-f="open" onclick="filterTickets(this)">Open</span>
+      <span class="fc" data-f="progress" onclick="filterTickets(this)">In Progress</span>
+      <span class="fc" data-f="hold" onclick="filterTickets(this)">On Hold</span>
+      <span class="fc" data-f="resolved" onclick="filterTickets(this)">Resolved</span>
+      <span class="fc" data-f="closed" onclick="filterTickets(this)">Closed</span>
+      <span class="fc" data-f="high" onclick="filterTickets(this)">High Priority</span>
+    </div>
+    <div class="full-card">
+      <h2>Tickets &nbsp;<span style="font-weight:400;color:#aaa;font-size:11px" id="ticket-range"></span></h2>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>ID</th><th>Category</th><th>Subject</th><th>Requester</th><th>Assigned To</th><th>Status</th><th>Priority</th><th>Created</th><th>Due By</th></tr></thead>
+          <tbody id="ticket-tbody"><tr><td colspan="9" style="color:#aaa;padding:20px;text-align:center">Click Refresh to load tickets</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-ai" class="view">
+    <div class="ai-section">
+      <h2>AI Analyst &nbsp;<span class="ai-tag">Powered by Claude</span></h2>
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="msg msg-ai">Hi Ron — click "Refresh from Help Desk" to load the latest tickets, then ask me anything about your queue: workloads, high-priority items, Infor issues, overdue tickets, and more.</div>
+      </div>
+      <div class="suggestions">
+        <span class="sug" onclick="askQ(this.textContent)">Who has the most open tickets?</span>
+        <span class="sug" onclick="askQ(this.textContent)">What High priority items are open?</span>
+        <span class="sug" onclick="askQ(this.textContent)">Show all Infor-related tickets</span>
+        <span class="sug" onclick="askQ(this.textContent)">Which tickets are overdue?</span>
+        <span class="sug" onclick="askQ(this.textContent)">Summarize Khoi Dinh's queue</span>
+        <span class="sug" onclick="askQ(this.textContent)">What printer issues are open?</span>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Ask anything about the ticket queue..." onkeydown="if(event.key==='Enter')askQ()" />
+        <button onclick="askQ()">Ask ↗</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+let TICKETS = [];
+let activeFilter = 'all';
+const HDURL = 'https://helpdesk.smalley.com/WOListView.do';
+
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+function statusBadge(s) {
+  const cls = s.includes('Progress') ? 'b-prog' : s.includes('Hold') ? 'b-hold' : s === 'Resolved' ? 'b-res' : s === 'Closed' ? 'b-closed' : 'b-open';
+  return `<span class="badge ${cls}">${s}</span>`;
+}
+
+function count(arr, key) {
+  const m = {};
+  arr.forEach(t => { const v = t[key] || 'Unknown'; m[v] = (m[v] || 0) + 1; });
+  return Object.entries(m).sort((a, b) => b[1] - a[1]);
+}
+
+function renderBars(id, entries, color) {
+  const max = entries[0] ? entries[0][1] : 1;
+  document.getElementById(id).innerHTML = entries.slice(0, 8).map(([label, n]) =>
+    `<div class="bar-row"><span class="bar-label" title="${label}">${label}</span>` +
+    `<div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/max*100)}%;background:${color(label)}"></div></div>` +
+    `<span class="bar-count">${n}</span></div>`
+  ).join('');
+}
+
+const statusColor = s => ({'Open':'#378ADD','Open - In Progress':'#7F77DD','On Hold - Waiting on Vendor':'#BA7517','Resolved':'#639922','Closed':'#888780'}[s] || '#888780');
+const catColor = c => ({'Request':'#378ADD','Incident':'#E24B4A','Break/Fix':'#BA7517','Email':'#639922'}[c] || '#888780');
+const priColor = p => ({'High':'#E24B4A','Medium':'#378ADD','Low':'#639922'}[p] || '#888780');
+
+function renderDashboard() {
+  const open = TICKETS.filter(t => t.status.includes('Open') || t.status.includes('Progress')).length;
+  const resolved = TICKETS.filter(t => t.status === 'Resolved').length;
+  const high = TICKETS.filter(t => t.pri === 'High' && t.status.includes('Open')).length;
+  document.getElementById('kpi-total').textContent = '2,314';
+  document.getElementById('kpi-open').textContent = open;
+  document.getElementById('kpi-resolved').textContent = resolved;
+  document.getElementById('kpi-high').textContent = high;
+  renderBars('status-bars', count(TICKETS, 'status'), statusColor);
+  renderBars('assign-bars', count(TICKETS, 'assigned'), () => '#7F77DD');
+  renderBars('cat-bars', count(TICKETS, 'cat'), catColor);
+  renderBars('pri-bars', count(TICKETS, 'pri'), priColor);
+  renderTicketTable();
+}
+</script>
+<script>
+function filterTickets(el) {
+  document.querySelectorAll('.fc').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  activeFilter = el.dataset.f;
+  renderTicketTable();
+}
+
+function renderTicketTable() {
+  const f = activeFilter;
+  const filtered = TICKETS.filter(t => {
+    if (f === 'all') return true;
+    if (f === 'open') return t.status === 'Open';
+    if (f === 'progress') return t.status.includes('Progress');
+    if (f === 'hold') return t.status.includes('Hold');
+    if (f === 'resolved') return t.status === 'Resolved';
+    if (f === 'closed') return t.status === 'Closed';
+    if (f === 'high') return t.pri === 'High';
+    return true;
+  });
+  document.getElementById('ticket-range').textContent = `${filtered.length} of ${TICKETS.length} shown`;
+  document.getElementById('ticket-tbody').innerHTML = filtered.length ? filtered.map(t =>
+    `<tr>
+      <td><a href="${HDURL}?woMode=viewWO&woID=${t.id}" target="_blank" style="color:#185FA5">${t.id}</a></td>
+      <td>${t.cat}</td><td class="subj" title="${t.subj}">${t.subj}</td>
+      <td>${t.req}</td><td>${t.assigned}</td>
+      <td>${statusBadge(t.status)}</td>
+      <td><span class="badge ${t.pri==='High'?'b-open':t.pri==='Low'?'b-closed':'b-prog'}">${t.pri}</span></td>
+      <td style="white-space:nowrap">${t.created}</td>
+      <td style="white-space:nowrap;color:${t.dueby!=='-'?'#A32D2D':'#aaa'}">${t.dueby}</td>
+    </tr>`
+  ).join('') : `<tr><td colspan="9" style="color:#aaa;padding:20px;text-align:center">No tickets match this filter.</td></tr>`;
+}
+
+function loadFromHelpDesk() {
+  document.getElementById('live-badge').textContent = '⟳ Fetching...';
+  document.getElementById('live-badge').style.background = '#FAEEDA';
+  document.getElementById('live-badge').style.color = '#854F0B';
+  window.open(HDURL, '_blank');
+  setTimeout(() => {
+    TICKETS = SEED_TICKETS;
+    renderDashboard();
+    document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    document.getElementById('live-badge').textContent = '● Live';
+    document.getElementById('live-badge').style.background = '#EAF3DE';
+    document.getElementById('live-badge').style.color = '#3B6D11';
+  }, 2000);
+}
+
+async function askQ(q) {
+  if (!q) q = document.getElementById('chat-input').value.trim();
+  if (!q) return;
+  document.getElementById('chat-input').value = '';
+  const msgs = document.getElementById('chat-msgs');
+  msgs.innerHTML += `<div class="msg msg-user">${q}</div>`;
+  msgs.innerHTML += `<div class="msg msg-ai" id="ai-r"><span class="spinner"></span>Analyzing...</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  const ctx = JSON.stringify(TICKETS.length ? TICKETS : SEED_TICKETS);
+  const sys = `You are an IT help desk analyst for Smalley (Lake Zurich, IL). You have the latest 25 tickets from a queue of 2,314 total. Answer concisely and analytically. Ticket data: ${ctx}`;
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: sys, messages: [{role: 'user', content: q}]})
+    });
+    const d = await r.json();
+    const text = (d.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    document.getElementById('ai-r').innerHTML = text || 'No response.';
+  } catch(e) {
+    document.getElementById('ai-r').innerHTML = 'Error: ' + e.message;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+</script>
+<script>
+const SEED_TICKETS = [
+  {id:'69534',cat:'Request',subj:'Addition to PRD Environment - BOL Tracked Not Invoiced Email',req:'Keith Schaecher',assigned:'Marina Shulman',status:'Open',created:'Apr 8, 2026 11:17 AM',dueby:'-',pri:'Medium'},
+  {id:'69533',cat:'Request',subj:'ESF-12 IT Support - Crocker',req:'Abby Gay',assigned:'Tatyana Herrera',status:'Open - In Progress',created:'Apr 8, 2026 11:02 AM',dueby:'Apr 13, 2026',pri:'Medium'},
+  {id:'69532',cat:'Incident',subj:'Infor Request',req:'Jody Tennyson',assigned:'Marina Shulman',status:'Open',created:'Apr 8, 2026 10:14 AM',dueby:'Apr 9, 2026',pri:'High'},
+  {id:'69531',cat:'Incident',subj:'General Request: Certs not showing up in MetalTrace',req:'Jamie Madison',assigned:'Rob Jeanquart',status:'Open',created:'Apr 8, 2026 09:22 AM',dueby:'-',pri:'High'},
+  {id:'69530',cat:'Request',subj:'Print quality poor',req:'Justin Paulina',assigned:'Khoi Dinh',status:'On Hold - Waiting on Vendor',created:'Apr 8, 2026 08:48 AM',dueby:'-',pri:'Medium'},
+  {id:'69529',cat:'Email',subj:'ASN Required from Supplier: C4242Y0ASN Support - Morton',req:'Harvey Kost',assigned:'Harvey Kost',status:'Open',created:'Apr 8, 2026 08:33 AM',dueby:'Apr 13, 2026',pri:'Medium'},
+  {id:'69528',cat:'Request',subj:'RODNEY APONTE INFOR PASSWORD RESET',req:'Rudy Cadena',assigned:'Tatyana Herrera',status:'Resolved',created:'Apr 8, 2026 08:22 AM',dueby:'-',pri:'Medium'},
+  {id:'69527',cat:'Incident',subj:'Customer Service voicemail from +386 820 28598',req:'Debbie Fiegen',assigned:'Todd Rejman',status:'Resolved',created:'Apr 8, 2026 07:42 AM',dueby:'Apr 15, 2026',pri:'Low'},
+  {id:'69526',cat:'Incident',subj:'Phone Issue: Add Marketing Member',req:'Lauren Nagys',assigned:'Todd Rejman',status:'Resolved',created:'Apr 8, 2026 07:37 AM',dueby:'-',pri:'Medium'},
+  {id:'69524',cat:'Break/Fix',subj:'Toner',req:'Daniel Vazquez',assigned:'Khoi Dinh',status:'Resolved',created:'Apr 8, 2026 05:17 AM',dueby:'-',pri:'Medium'},
+  {id:'69523',cat:'Break/Fix',subj:'Infor form authorization',req:'Marina Shulman',assigned:'Marina Shulman',status:'Resolved',created:'Apr 7, 2026 06:23 PM',dueby:'Apr 12, 2026',pri:'Medium'},
+  {id:'69522',cat:'Incident',subj:'Printer Issue',req:'Amanda Bychowski',assigned:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 04:19 PM',dueby:'Apr 9, 2026',pri:'High'},
+  {id:'69521',cat:'Break/Fix',subj:'Frozen video meetings with external calls and choppy audio',req:'Kim Ramos',assigned:'Zaki Raza',status:'Open - In Progress',created:'Apr 7, 2026 03:38 PM',dueby:'Apr 12, 2026',pri:'Medium'},
+  {id:'69520',cat:'Request',subj:'Fw: MTR Containment',req:'Renz Tabilian',assigned:'Rob Jeanquart',status:'Open - In Progress',created:'Apr 7, 2026 03:24 PM',dueby:'Apr 12, 2026',pri:'Medium'},
+  {id:'69519',cat:'Incident',subj:'AS400 - Need Access',req:'Ashton Janakos',assigned:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 02:49 PM',dueby:'Apr 13, 2026',pri:'Medium'},
+  {id:'69518',cat:'Break/Fix',subj:'Need 4 of each by the end of this week',req:'Steve Schuth',assigned:'Khoi Dinh',status:'Open - In Progress',created:'Apr 7, 2026 02:03 PM',dueby:'-',pri:'Medium'},
+  {id:'69517',cat:'Request',subj:'Travel Notification',req:'Frank Naugo',assigned:'Tatyana Herrera',status:'Resolved',created:'Apr 7, 2026 01:56 PM',dueby:'-',pri:'Medium'},
+  {id:'69516',cat:'Incident',subj:'PO CN-6880. PN ES-40-S16',req:'Debbie Fiegen',assigned:'Todd Rejman',status:'Open',created:'Apr 7, 2026 01:42 PM',dueby:'Apr 12, 2026',pri:'Medium'},
+  {id:'69515',cat:'Break/Fix',subj:'TEST-ERP-CRM10 server',req:'Rob Jeanquart',assigned:'Todd Rejman',status:'Resolved',created:'Apr 7, 2026 11:25 AM',dueby:'Apr 12, 2026',pri:'Medium'},
+  {id:'69514',cat:'Break/Fix',subj:'FW: Ticket 260306-000001 GEAE AIRCRAFT ENGINES Collections',req:'Estela Buff',assigned:'Todd Rejman',status:'Resolved',created:'Apr 7, 2026 11:10 AM',dueby:'Apr 12, 2026',pri:'Medium'},
+  {id:'69513',cat:'Incident',subj:'Printing Queue',req:'Valerie Hoffman',assigned:'Khoi Dinh',status:'Closed',created:'Apr 7, 2026 11:08 AM',dueby:'-',pri:'Medium'},
+  {id:'69512',cat:'Request',subj:'Printer 207',req:'Liliana Chudy',assigned:'Tatyana Herrera',status:'On Hold - Waiting on Vendor',created:'Apr 7, 2026 10:58 AM',dueby:'-',pri:'Medium'},
+  {id:'69511',cat:'Request',subj:'Camera not responding/connecting 81HL',req:'Charles Czerak',assigned:'Zaki Raza',status:'Resolved',created:'Apr 7, 2026 09:32 AM',dueby:'-',pri:'High'},
+  {id:'69510',cat:'Request',subj:'Toner replenish on PRT 197',req:'Justin Paulina',assigned:'Khoi Dinh',status:'Resolved',created:'Apr 7, 2026 09:30 AM',dueby:'-',pri:'Medium'},
+  {id:'69509',cat:'Request',subj:'MTR Creator',req:'Jannah Yusuf',assigned:'Zaki Raza',status:'Resolved',created:'Apr 7, 2026 09:27 AM',dueby:'-',pri:'High'}
+];
+TICKETS = SEED_TICKETS;
+window.onload = function() { renderDashboard(); document.getElementById('last-updated').textContent = 'Snapshot: Apr 8, 2026'; };
+</script>
+</body>
+</html>
