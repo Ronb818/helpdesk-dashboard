@@ -186,9 +186,9 @@ tr:last-child td{border-bottom:none}
   <div id="tab-overview" class="view active">
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-label">Total Tickets</div><div class="kpi-val" id="kpiTotal">2,314</div><div class="kpi-sub">All time</div></div>
-      <div class="kpi"><div class="kpi-label">Open / In Progress</div><div class="kpi-val" id="kpiOpen">-</div><div class="kpi-sub">Active now</div></div>
-      <div class="kpi"><div class="kpi-label">Resolved</div><div class="kpi-val" id="kpiResolved">-</div><div class="kpi-sub">This snapshot</div></div>
-      <div class="kpi"><div class="kpi-label">High Priority Open</div><div class="kpi-val" id="kpiHigh">-</div><div class="kpi-sub">Needs attention</div></div>
+      <div class="kpi"><div class="kpi-label">Open / In Progress</div><div class="kpi-val" id="kpiOpen">-</div><div class="kpi-sub">Last 30 days</div></div>
+      <div class="kpi"><div class="kpi-label">Resolved</div><div class="kpi-val" id="kpiResolved">-</div><div class="kpi-sub">Last 30 days</div></div>
+      <div class="kpi"><div class="kpi-label">High Priority Open</div><div class="kpi-val" id="kpiHigh">-</div><div class="kpi-sub">Last 30 days</div></div>
     </div>
     <div class="row2">
       <div class="card"><h2>Status breakdown</h2><div class="bar-wrap" id="statusBars"></div></div>
@@ -304,7 +304,41 @@ function count(arr,key){const m={};arr.forEach(t=>{const v=t[key]||'?';m[v]=(m[v
 function bars(id,entries,color){const max=entries[0]?entries[0][1]:1;document.getElementById(id).innerHTML=entries.slice(0,8).map(([l,n])=>`<div class="bar-row"><span class="bar-label" title="${esc(l)}">${esc(l)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/max*100)}%;background:${color(l)}"></div></div><span class="bar-count">${n}</span></div>`).join('');}
 function sBadge(s){const c=s.includes('Progress')?'p-prog':s.includes('Hold')?'p-hold':s==='Resolved'?'p-res':s==='Closed'?'p-closed':'p-open';return`<span class="pill ${c}">${esc(s)}</span>`;}
 function renderAll(){
+  // Compute 30-day window
+  const now=new Date();
+  const cutoff=new Date(now.getTime()-30*24*60*60*1000);
+  const tix30=TICKETS.filter(t=>{
+    if(!t.created)return true;
+    // Parse "Apr 8, 2026 11:17 AM" style dates
+    const d=new Date(t.created.replace(/(\d{1,2}:\d{2}\s?[AP]M)/i,'$1'));
+    return isNaN(d.getTime())||d>=cutoff;
+  });
+  // Date range label
+  const fmt=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const rangeLabel=`${fmt(cutoff)} – ${fmt(now)} (${tix30.length} tickets)`;
+  ['statusBars','assignBars','catBars','priBars'].forEach(id=>{
+    const card=document.getElementById(id)?.closest('.card');
+    if(card){
+      let sub=card.querySelector('.chart-range');
+      if(!sub){sub=document.createElement('div');sub.className='chart-range';sub.style.cssText='font-size:10px;color:#aaa;margin-bottom:8px';card.querySelector('h2').after(sub);}
+      sub.textContent=rangeLabel;
+    }
+  });
+  // KPIs from 30-day window
+  const o=tix30.filter(t=>t.status.includes('Open')||t.status.includes('Progress')).length;
+  const r=tix30.filter(t=>t.status==='Resolved').length;
+  const h=tix30.filter(t=>t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'))).length;
   document.getElementById('kpiTotal').textContent=totalTicketCount.toLocaleString();
+  document.getElementById('kpiOpen').textContent=o;
+  document.getElementById('kpiResolved').textContent=r;
+  document.getElementById('kpiHigh').textContent=h;
+  // Charts from 30-day window
+  bars('statusBars',count(tix30,'status'),sColor);
+  bars('assignBars',count(tix30,'asgn'),()=>'#7F77DD');
+  bars('catBars',count(tix30,'cat'),cColor);
+  bars('priBars',count(tix30,'pri'),pColor);
+  renderTix();
+}
   const o=TICKETS.filter(t=>t.status.includes('Open')||t.status.includes('Progress')).length;
   const r=TICKETS.filter(t=>t.status==='Resolved').length;
   const h=TICKETS.filter(t=>t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'))).length;
@@ -561,7 +595,15 @@ function refreshFromHelpDesk(){
 
 function receiveHDData(requests, total){
   if(!requests||!requests.length){toast('No ticket data received.');return;}
-  if(total && total>0) totalTicketCount=total;
+  // Accept total from bookmarklet, or fall back to localStorage saved value
+  if(total && total>0){
+    totalTicketCount=total;
+    localStorage.setItem('hd_total_count', total);
+  } else {
+    // Try to restore last known total from localStorage
+    const saved=localStorage.getItem('hd_total_count');
+    if(saved && parseInt(saved)>0) totalTicketCount=parseInt(saved);
+  }
   const prev=new Map(TICKETS.map(t=>[t.id,t]));
   const refreshed=requests.map(t=>({
     id:String(t.id||''),
@@ -580,7 +622,6 @@ function receiveHDData(requests, total){
   const newIds=new Set(refreshed.map(t=>t.id));
   TICKETS=[...refreshed,...TICKETS.filter(t=>!newIds.has(t.id))];
   localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
-  if(total && total>0) localStorage.setItem('hd_total_count', totalTicketCount);
   const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   document.getElementById('lastUpdated').textContent='Last refreshed '+now;
   localStorage.setItem('hd_last_refresh',Date.now());
@@ -591,7 +632,7 @@ function receiveHDData(requests, total){
 }
 
 function showBookmarkletInstructions(popupOpened){
-  const bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nThis bookmark must be clicked while you are on the Help Desk tab (helpdesk.smalley.com).\\n\\nSteps:\\n1. Click Refresh from Help Desk on the dashboard first\\n2. Wait for the help desk tab to load fully\\n3. Switch to that help desk tab\\n4. Then click this SD Refresh bookmark');return;}var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var q=encodeURIComponent(JSON.stringify({list_info:{row_count:'50',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(!reqs.length){alert('No tickets returned. Please make sure you are logged in to the help desk.');return;}var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:reqs,total:d.list_info&&d.list_info.total_count?parseInt(d.list_info.total_count):reqs.length},'*');alert('Done! Sent '+reqs.length+' tickets to your dashboard.');}else{alert('Dashboard window not found.\\nMake sure you clicked Refresh from Help Desk on the dashboard FIRST, then come back here and click this bookmark.');}}).catch(function(e){alert('Error: '+e.message+'\\n\\nMake sure you are logged in to the help desk.');});})();";
+  const bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nThis bookmark must be clicked while you are on the Help Desk tab (helpdesk.smalley.com).\\n\\nSteps:\\n1. Click Refresh from Help Desk on the dashboard first\\n2. Wait for the help desk tab to load fully\\n3. Switch to that help desk tab\\n4. Then click this SD Refresh bookmark');return;}var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var cutoff=Date.now()-(30*24*60*60*1000);var q=encodeURIComponent(JSON.stringify({list_info:{row_count:'100',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:f,search_criteria:{field:'created_time',condition:'greater_than',value:String(cutoff)}}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(!reqs.length){alert('No tickets returned. Please make sure you are logged in to the help desk.');return;}var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:reqs,total:d.list_info&&d.list_info.total_count?parseInt(d.list_info.total_count):reqs.length},'*');alert('Done! Sent '+reqs.length+' tickets (last 30 days) to your dashboard.');}else{alert('Dashboard window not found.\\nMake sure you clicked Refresh from Help Desk on the dashboard FIRST, then come back here and click this bookmark.');}}).catch(function(e){alert('Error: '+e.message+'\\n\\nMake sure you are logged in to the help desk.');});})();";
   let ov=document.getElementById('bm-overlay');
   if(!ov){ov=document.createElement('div');ov.id='bm-overlay';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center';document.body.appendChild(ov);}
   ov.style.display='flex';
@@ -625,12 +666,18 @@ async function ask(q){
   msgs.innerHTML+=`<div class="msg msg-a" id="aiR"><span class="spinner"></span>Analyzing...</div>`;
   msgs.scrollTop=msgs.scrollHeight;
   if(!apiKey){document.getElementById('aiR').textContent='No API key — click ⚙ Settings.';return;}
-  const tixData=TICKETS.map(t=>({...t,notesText:(t.notes||[]).map(n=>n.by+': '+n.text).join(' | ')}));
-  const sys=`You are an IT help desk analyst for Smalley (Lake Zurich, IL). You have ${TICKETS.length} tickets including description and notes where loaded. Answer concisely. Data: ${JSON.stringify(tixData)}`;
+  // Trim payload — only send fields needed for analysis, cap note text at 200 chars
+  const slim=TICKETS.map(t=>({
+    id:t.id, cat:t.cat, subj:t.subj, req:t.req, asgn:t.asgn,
+    status:t.status, pri:t.pri, created:t.created, due:t.due,
+    desc:(t.desc||'').substring(0,200),
+    notes:(t.notes||[]).map(n=>n.by+': '+(n.text||'').substring(0,150)).join(' | ')
+  }));
+  const sys=`You are an IT help desk analyst for Smalley (Lake Zurich IL). You have ${TICKETS.length} of ${totalTicketCount} total tickets. Answer concisely in 2-4 sentences max unless a list is needed. Data: ${JSON.stringify(slim)}`;
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:q}]})
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})
     });
     const d=await r.json();
     document.getElementById('aiR').innerHTML=((d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join(''))||'No response.';
