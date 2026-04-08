@@ -545,52 +545,69 @@ function showNewAlert(tickets){
 }
 async function manualRefresh(){clearTimeout(refreshTimer);clearInterval(countdownTimer);nextRefreshAt=null;document.getElementById('countdown').textContent='';await doRefresh();}
 
-// ── Direct Help Desk Refresh (no API key needed) ─────────────────────────
-async function refreshFromHelpDesk(){
-  const btn=document.getElementById('hdRefreshBtn');
-  if(btn){btn.textContent='Fetching...';btn.disabled=true;}
-  setBadge('refreshing');
-  try{
-    const fields=['id','subject','requester','technician','status','priority','category','created_time','due_by_time','has_notes','site'];
-    const inputData=encodeURIComponent(JSON.stringify({list_info:{row_count:'50',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:fields}}));
-    const r=await fetch(`${HD}/api/v3/requests?input_data=${inputData}&SUBREQUEST=XMLHTTP`);
-    if(!r.ok) throw new Error('HTTP '+r.status+' — make sure you are on the Smalley network');
-    const d=await r.json();
-    const list=d.requests||[];
-    if(!list.length) throw new Error('No tickets returned from API');
-    const prev=new Map(TICKETS.map(t=>[t.id,t]));
-    const refreshed=list.map(t=>({
-      id: String(t.id||''),
-      cat: t.category?.name||t.service_category?.name||'Request',
-      subj: t.subject||'',
-      req: t.requester?.name||'',
-      asgn: t.technician?.name||'Unassigned',
-      status: t.status?.name||'Open',
-      created: t.created_time?.display_value||'',
-      due: t.due_by_time?.display_value||'-',
-      pri: t.priority?.name||'Medium',
-      site: t.site?.name||'-',
-      desc: prev.get(String(t.id))?.desc||'',
-      notes: prev.get(String(t.id))?.notes||[]
-    }));
-    // Merge: keep any existing tickets not in new batch, prepend new ones
-    const newIds=new Set(refreshed.map(t=>t.id));
-    const kept=TICKETS.filter(t=>!newIds.has(t.id));
-    TICKETS=[...refreshed,...kept];
-    localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
-    const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('lastUpdated').textContent=`Last refreshed ${now}`;
-    localStorage.setItem('hd_last_refresh',Date.now());
-    setBadge('live');
-    renderAll();
-    toast(`Loaded ${refreshed.length} tickets from help desk`);
-  }catch(e){
-    setBadge('error');
-    toast('Refresh failed: '+e.message+'. Must be on Smalley network.');
-    console.error(e);
-  }
-  if(btn){btn.textContent='↻ Refresh from Help Desk';btn.disabled=false;}
-  if(apiKey) scheduleNext();
+// ── Direct Help Desk Refresh via bookmarklet + postMessage ───────────────
+function refreshFromHelpDesk(){
+  window._hdMsgHandler = window._hdMsgHandler || function(e){
+    if(!e.data||e.data.type!=='HD_REFRESH') return;
+    receiveHDData(e.data.requests);
+  };
+  window.removeEventListener('message', window._hdMsgHandler);
+  window.addEventListener('message', window._hdMsgHandler);
+  const popup=window.open('https://helpdesk.smalley.com/WOListView.do','_hdRefresh','width=1000,height=700,left=100,top=100');
+  showBookmarkletInstructions(!!popup);
+}
+
+function receiveHDData(requests){
+  if(!requests||!requests.length){toast('No ticket data received.');return;}
+  const prev=new Map(TICKETS.map(t=>[t.id,t]));
+  const refreshed=requests.map(t=>({
+    id:String(t.id||''),
+    cat:(t.category&&t.category.name)||'Request',
+    subj:t.subject||'',
+    req:(t.requester&&t.requester.name)||'',
+    asgn:(t.technician&&t.technician.name)||'Unassigned',
+    status:(t.status&&t.status.name)||'Open',
+    created:(t.created_time&&t.created_time.display_value)||'',
+    due:(t.due_by_time&&t.due_by_time.display_value)||'-',
+    pri:(t.priority&&t.priority.name)||'Medium',
+    site:(t.site&&t.site.name)||'-',
+    desc:(prev.get(String(t.id))||{}).desc||'',
+    notes:(prev.get(String(t.id))||{}).notes||[]
+  }));
+  const newIds=new Set(refreshed.map(t=>t.id));
+  TICKETS=[...refreshed,...TICKETS.filter(t=>!newIds.has(t.id))];
+  localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
+  const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('lastUpdated').textContent='Last refreshed '+now;
+  localStorage.setItem('hd_last_refresh',Date.now());
+  setBadge('live'); renderAll();
+  toast('Loaded '+refreshed.length+' tickets from help desk');
+  const ov=document.getElementById('bm-overlay');
+  if(ov) ov.style.display='none';
+}
+
+function showBookmarkletInstructions(popupOpened){
+  const bmCode="javascript:(function(){var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var q=encodeURIComponent(JSON.stringify({list_info:{row_count:'50',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:f}}));fetch('/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP').then(function(r){return r.json();}).then(function(d){var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:d.requests||[]},'*');alert('Sent '+(d.requests||[]).length+' tickets to dashboard!');}else{alert('Open the dashboard first, then use this bookmarklet from the help desk tab.');}}).catch(function(e){alert('Error: '+e.message);});})()";
+  let ov=document.getElementById('bm-overlay');
+  if(!ov){ov=document.createElement('div');ov.id='bm-overlay';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center';document.body.appendChild(ov);}
+  ov.style.display='flex';
+  ov.innerHTML='<div style="background:#fff;border-radius:12px;padding:24px;max-width:500px;width:90%;box-shadow:0 4px 24px rgba(0,0,0,.2)">'
+    +'<h2 style="font-size:15px;font-weight:500;margin-bottom:10px">↻ Refresh from Help Desk</h2>'
+    +(popupOpened?'<p style="font-size:13px;color:#3B6D11;background:#EAF3DE;padding:8px 12px;border-radius:8px;margin-bottom:12px">✓ Help desk tab opened — follow the steps below</p>':'')
+    +'<p style="font-size:13px;color:#666;line-height:1.6;margin-bottom:12px"><strong>One-time setup:</strong> Drag the button below to your Chrome bookmarks bar.</p>'
+    +'<div style="margin-bottom:14px;padding:10px 12px;background:#f5f5f0;border-radius:8px;display:flex;align-items:center;gap:10px">'
+    +'<a href="'+bmCode+'" onclick="alert(\'Drag this to your bookmarks bar — do not click it here.\');return false;" style="font-size:13px;font-weight:500;color:#534AB7;text-decoration:none;padding:6px 14px;background:#EEEDFE;border-radius:6px;border:0.5px solid #7F77DD;cursor:grab;white-space:nowrap">📋 SD Refresh</a>'
+    +'<span style="font-size:12px;color:#888">← drag to your bookmarks bar</span>'
+    +'</div>'
+    +'<p style="font-size:12px;font-weight:500;color:#555;margin-bottom:6px">Each time you want to refresh:</p>'
+    +'<ol style="font-size:13px;color:#666;line-height:2;padding-left:18px;margin-bottom:16px">'
+    +'<li>Click <strong>↻ Refresh from Help Desk</strong> here (opens the help desk)</li>'
+    +'<li>Wait for the help desk tab to finish loading</li>'
+    +'<li>Click the <strong>SD Refresh</strong> bookmark in your bookmarks bar</li>'
+    +'<li>Ticket data loads here automatically ✓</li>'
+    +'</ol>'
+    +'<button onclick="document.getElementById(\'bm-overlay\').style.display=\'none\'" style="width:100%;padding:9px;font-size:13px;border:0.5px solid #d0cec8;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit">Close</button>'
+    +'</div>';
 }
 </script>
 <script>
