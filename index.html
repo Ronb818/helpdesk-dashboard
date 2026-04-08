@@ -185,7 +185,7 @@ tr:last-child td{border-bottom:none}
   <!-- Overview tab -->
   <div id="tab-overview" class="view active">
     <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-label">Total Tickets</div><div class="kpi-val">2,314</div><div class="kpi-sub">All time</div></div>
+      <div class="kpi"><div class="kpi-label">Total Tickets</div><div class="kpi-val" id="kpiTotal">2,314</div><div class="kpi-sub">All time</div></div>
       <div class="kpi"><div class="kpi-label">Open / In Progress</div><div class="kpi-val" id="kpiOpen">-</div><div class="kpi-sub">Active now</div></div>
       <div class="kpi"><div class="kpi-label">Resolved</div><div class="kpi-val" id="kpiResolved">-</div><div class="kpi-sub">This snapshot</div></div>
       <div class="kpi"><div class="kpi-label">High Priority Open</div><div class="kpi-val" id="kpiHigh">-</div><div class="kpi-sub">Needs attention</div></div>
@@ -258,6 +258,7 @@ const HD='https://helpdesk.smalley.com';
 let TICKETS=[],activeFilter='all',searchQuery='',apiKey='',intervalMin=15;
 let refreshTimer=null,countdownTimer=null,nextRefreshAt=null;
 let openDetailRow=null;
+let totalTicketCount=2314;
 
 const SEED=[
 {id:'69534',cat:'Request',subj:'Addition to PRD Environment - BOL Tracked Not Invoiced Email',req:'Keith Schaecher',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 11:17 AM',due:'-',pri:'Medium',desc:'',notes:[]},
@@ -303,6 +304,7 @@ function count(arr,key){const m={};arr.forEach(t=>{const v=t[key]||'?';m[v]=(m[v
 function bars(id,entries,color){const max=entries[0]?entries[0][1]:1;document.getElementById(id).innerHTML=entries.slice(0,8).map(([l,n])=>`<div class="bar-row"><span class="bar-label" title="${esc(l)}">${esc(l)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/max*100)}%;background:${color(l)}"></div></div><span class="bar-count">${n}</span></div>`).join('');}
 function sBadge(s){const c=s.includes('Progress')?'p-prog':s.includes('Hold')?'p-hold':s==='Resolved'?'p-res':s==='Closed'?'p-closed':'p-open';return`<span class="pill ${c}">${esc(s)}</span>`;}
 function renderAll(){
+  document.getElementById('kpiTotal').textContent=totalTicketCount.toLocaleString();
   const o=TICKETS.filter(t=>t.status.includes('Open')||t.status.includes('Progress')).length;
   const r=TICKETS.filter(t=>t.status==='Resolved').length;
   const h=TICKETS.filter(t=>t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'))).length;
@@ -549,7 +551,7 @@ async function manualRefresh(){clearTimeout(refreshTimer);clearInterval(countdow
 function refreshFromHelpDesk(){
   window._hdMsgHandler = window._hdMsgHandler || function(e){
     if(!e.data||e.data.type!=='HD_REFRESH') return;
-    receiveHDData(e.data.requests);
+    receiveHDData(e.data.requests, e.data.total);
   };
   window.removeEventListener('message', window._hdMsgHandler);
   window.addEventListener('message', window._hdMsgHandler);
@@ -557,8 +559,9 @@ function refreshFromHelpDesk(){
   showBookmarkletInstructions(!!popup);
 }
 
-function receiveHDData(requests){
+function receiveHDData(requests, total){
   if(!requests||!requests.length){toast('No ticket data received.');return;}
+  if(total && total>0) totalTicketCount=total;
   const prev=new Map(TICKETS.map(t=>[t.id,t]));
   const refreshed=requests.map(t=>({
     id:String(t.id||''),
@@ -577,6 +580,7 @@ function receiveHDData(requests){
   const newIds=new Set(refreshed.map(t=>t.id));
   TICKETS=[...refreshed,...TICKETS.filter(t=>!newIds.has(t.id))];
   localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
+  if(total && total>0) localStorage.setItem('hd_total_count', totalTicketCount);
   const now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   document.getElementById('lastUpdated').textContent='Last refreshed '+now;
   localStorage.setItem('hd_last_refresh',Date.now());
@@ -587,7 +591,7 @@ function receiveHDData(requests){
 }
 
 function showBookmarkletInstructions(popupOpened){
-  const bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nThis bookmark must be clicked while you are on the Help Desk tab (helpdesk.smalley.com).\\n\\nSteps:\\n1. Click Refresh from Help Desk on the dashboard first\\n2. Wait for the help desk tab to load fully\\n3. Switch to that help desk tab\\n4. Then click this SD Refresh bookmark');return;}var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var q=encodeURIComponent(JSON.stringify({list_info:{row_count:'50',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(!reqs.length){alert('No tickets returned. Please make sure you are logged in to the help desk.');return;}var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:reqs},'*');alert('Done! Sent '+reqs.length+' tickets to your dashboard.');}else{alert('Dashboard window not found.\\nMake sure you clicked Refresh from Help Desk on the dashboard FIRST, then come back here and click this bookmark.');}}).catch(function(e){alert('Error: '+e.message+'\\n\\nMake sure you are logged in to the help desk.');});})();";
+  const bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nThis bookmark must be clicked while you are on the Help Desk tab (helpdesk.smalley.com).\\n\\nSteps:\\n1. Click Refresh from Help Desk on the dashboard first\\n2. Wait for the help desk tab to load fully\\n3. Switch to that help desk tab\\n4. Then click this SD Refresh bookmark');return;}var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var q=encodeURIComponent(JSON.stringify({list_info:{row_count:'50',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(!reqs.length){alert('No tickets returned. Please make sure you are logged in to the help desk.');return;}var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:reqs,total:d.list_info&&d.list_info.total_count?parseInt(d.list_info.total_count):reqs.length},'*');alert('Done! Sent '+reqs.length+' tickets to your dashboard.');}else{alert('Dashboard window not found.\\nMake sure you clicked Refresh from Help Desk on the dashboard FIRST, then come back here and click this bookmark.');}}).catch(function(e){alert('Error: '+e.message+'\\n\\nMake sure you are logged in to the help desk.');});})();";
   let ov=document.getElementById('bm-overlay');
   if(!ov){ov=document.createElement('div');ov.id='bm-overlay';ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center';document.body.appendChild(ov);}
   ov.style.display='flex';
@@ -656,6 +660,8 @@ window.onload=function(){
   intervalMin=parseInt(localStorage.getItem('hd_interval')||'15');
   const saved=localStorage.getItem('hd_tickets');
   TICKETS=saved?JSON.parse(saved):SEED;
+  const savedTotal=localStorage.getItem('hd_total_count');
+  if(savedTotal) totalTicketCount=parseInt(savedTotal);
   document.querySelectorAll('.int-opt[data-val]').forEach(el=>{
     el.classList.toggle('active',parseInt(el.dataset.val)===intervalMin);
   });
