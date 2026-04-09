@@ -907,11 +907,30 @@ function ask(q){
   msgs.innerHTML+='<div class="msg msg-u">'+esc(q)+'</div>';
   msgs.innerHTML+='<div class="msg msg-a" id="aiR"><span class="spinner"></span>Analyzing...</div>';
   msgs.scrollTop=msgs.scrollHeight;
-  if(!apiKey&&!PROXY_URL&&!DEFAULT_AI_KEY){document.getElementById('aiR').textContent='No AI key configured — click \u2699 Settings.';return;}
-  var slim=TICKETS.map(function(t){return{id:t.id,cat:t.cat,subj:t.subj,req:t.req,asgn:t.asgn,status:t.status,pri:t.pri,created:t.created,due:t.due,desc:(t.desc||'').substring(0,150),notes:(t.notes||[]).map(function(n){return n.by+': '+(n.text||'').substring(0,120);}).join(' | ')};});
-  var sys='You are an IT help desk analyst for Smalley (Lake Zurich IL). '+TICKETS.length+' tickets of '+totalTicketCount+' total. Answer in 2-4 sentences max unless a list is needed. Data: '+JSON.stringify(slim);
-  callAI({model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})
-  .then(function(d){document.getElementById('aiR').innerHTML=((d.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join(''))||'No response.';})
+  // Always re-read key from localStorage in case it was updated via Settings
+  var currentKey=localStorage.getItem('hd_api_key')||apiKey||DEFAULT_AI_KEY;
+  if(!currentKey&&!PROXY_URL){document.getElementById('aiR').textContent='No AI key configured — click \u2699 Settings.';return;}
+  // Cap at 200 most recent tickets to stay under rate limit
+  var tixSample=TICKETS.slice(0,200);
+  var slim=tixSample.map(function(t){return{id:t.id,subj:t.subj,req:t.req,asgn:t.asgn,status:t.status,pri:t.pri,created:t.created,due:t.due};});
+  var sys='IT help desk analyst for Smalley (Lake Zurich IL). Showing '+tixSample.length+' of '+totalTicketCount+' total tickets (most recent first). Answer in 2-4 sentences unless a list is needed. Tickets: '+JSON.stringify(slim);
+  var payload={model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:[{role:'user',content:q}]};
+  // Call directly with current key to bypass stale apiKey variable
+  var effectiveKey=currentKey;
+  var fetchPromise;
+  if(PROXY_URL){
+    fetchPromise=fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(function(r){return r.json();});
+  } else {
+    fetchPromise=fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':effectiveKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify(payload)
+    }).then(function(r){return r.json();});
+  }
+  fetchPromise
+  .then(function(d){
+    if(d.type==='error') throw new Error(d.error&&d.error.message||'API error');
+    document.getElementById('aiR').innerHTML=((d.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join(''))||'No response.';
+  })
   .catch(function(e){document.getElementById('aiR').textContent='Error: '+e.message;})
   .finally(function(){msgs.scrollTop=msgs.scrollHeight;});
 }
