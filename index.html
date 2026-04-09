@@ -645,64 +645,93 @@ function toggleDetail(id){
 function loadNotes(id){
   var area=document.getElementById('na-'+id);
   var btn=document.getElementById('rb-'+id);
-  if(area) area.innerHTML='<div style="font-size:12px;color:#888;padding:6px 0"><span class="spinner"></span>Loading notes...</div>';
+  if(area) area.innerHTML='<div style="font-size:12px;color:#888;padding:6px 0"><span class="spinner"></span>Waiting for notes from help desk...</div>';
   if(btn) btn.textContent='Loading...';
-  fetch(HD+'/api/v3/requests/'+id+'/notes?SUBREQUEST=XMLHTTP',{credentials:'include'})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      var noteList=d.notes||[];
-      if(!noteList.length){
-        var tix=TICKETS.find(function(t){return t.id===id;});
-        if(tix) tix.notes=[];
-        if(area) area.innerHTML='<p class="notes-empty">No notes on this ticket.</p>';
-        if(btn) btn.textContent='↻ Reload';
-        return;
-      }
-      return Promise.all(noteList.map(function(n){
-        return fetch(HD+'/api/v3/requests/'+id+'/notes/'+n.id+'?SUBREQUEST=XMLHTTP',{credentials:'include'})
-          .then(function(r){return r.json();}).catch(function(){return {note:n};});
-      })).then(function(details){
-        var parsed=details.map(function(d){
-          var n=d.note||{};
-          // Strip zero-width spaces and other invisible chars from note text
-          var rawText=n.description?stripHtml(n.description).replace(/[\u200B-\u200D\uFEFF]/g,'').trim():'(no text)';
-          return{
-            by:(n.added_by&&n.added_by.name)||'Unknown',
-            time:(n.added_time&&n.added_time.display_value)||'',
-            text:rawText
-          };
-        });
-        // Fetch ticket description too
-        return fetch(HD+'/api/v3/requests/'+id+'?SUBREQUEST=XMLHTTP',{credentials:'include'})
-          .then(function(r){return r.json();}).catch(function(){return {};})
-          .then(function(td){
-            var desc=td.request?stripHtml(td.request.description||'').replace(/[\u200B-\u200D\uFEFF]/g,'').trim():'';
-            // Update ticket in memory
-            var tix=TICKETS.find(function(t){return t.id===id;});
-            if(tix){tix.notes=parsed;tix.desc=desc;}
-            // Save to localStorage safely
-            try{localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));}catch(e){console.warn('localStorage full, skipping save');}
-            // Update DOM directly — no renderTix() to avoid collapsing the expanded row
-            if(area) area.innerHTML=renderNotes({notes:parsed},searchQuery);
-            var descEl=document.getElementById('desc-'+id);
-            if(descEl) descEl.innerHTML=desc?highlight(desc,searchQuery):'<span style="color:#aaa;font-style:italic">No description.</span>';
-            var nc=document.getElementById('nc-'+id);
-            if(nc) nc.textContent='('+parsed.length+')';
-            if(btn) btn.textContent='↻ Reload';
-            // Update just the notes snippet cell in the table row (not full re-render)
-            var snippetCell=document.querySelector('tr.ticket-row[onclick*="\''+id+'\'"] td:nth-child(8)');
-            if(snippetCell&&parsed.length){
-              var snippet=parsed[0].text.substring(0,55)+'...';
-              snippetCell.innerHTML='<span class="t-notes-snippet" title="'+esc(snippet)+'">'+highlight(snippet,searchQuery)+'</span>';
-            }
-            toast('Loaded '+parsed.length+' note'+(parsed.length!==1?'s':'')+' for #'+id);
-          });
-      });
-    })
-    .catch(function(e){
-      if(area) area.innerHTML='<p class="notes-empty">Could not load — must be on Smalley network. <a href="'+HD+'/WorkOrder.do?woMode=viewWO&woID='+id+'" target="_blank" style="color:#185FA5">Open in help desk ↗</a></p>';
-      if(btn) btn.textContent='↻ Reload';
-    });
+
+  // Listen for notes data posted back from the help desk tab
+  function onNoteMsg(e){
+    if(!e.data||e.data.type!=='HD_NOTES'||e.data.id!==id) return;
+    window.removeEventListener('message',onNoteMsg);
+    // Close the overlay
+    var ov=document.getElementById('notes-overlay-'+id);
+    if(ov) ov.remove();
+    var parsed=e.data.notes||[];
+    var desc=e.data.desc||'';
+    // Strip zero-width spaces
+    parsed=parsed.map(function(n){return{by:n.by,time:n.time,text:(n.text||'').replace(/[\u200B-\u200D\uFEFF]/g,'').trim()};});
+    desc=desc.replace(/[\u200B-\u200D\uFEFF]/g,'').trim();
+    // Update ticket in memory
+    var tix=TICKETS.find(function(t){return t.id===id;});
+    if(tix){tix.notes=parsed;tix.desc=desc;}
+    try{localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));}catch(e){console.warn('localStorage full');}
+    // Update DOM
+    if(area) area.innerHTML=parsed.length?renderNotes({notes:parsed},searchQuery):'<p class="notes-empty">No notes on this ticket.</p>';
+    var descEl=document.getElementById('desc-'+id);
+    if(descEl) descEl.innerHTML=desc?highlight(desc,searchQuery):'<span style="color:#aaa;font-style:italic">No description.</span>';
+    var nc=document.getElementById('nc-'+id);
+    if(nc) nc.textContent='('+parsed.length+')';
+    if(btn) btn.textContent='↻ Reload';
+    // Update snippet in table row
+    var snippetCell=document.querySelector('tr.ticket-row[onclick*="\''+id+'\'"] td:nth-child(8)');
+    if(snippetCell&&parsed.length){
+      var snippet=parsed[0].text.substring(0,55)+'...';
+      snippetCell.innerHTML='<span class="t-notes-snippet" title="'+esc(snippet)+'">'+highlight(snippet,searchQuery)+'</span>';
+    }
+    toast('Loaded '+parsed.length+' note'+(parsed.length!==1?'s':'')+' for #'+id);
+  }
+  window.addEventListener('message',onNoteMsg);
+
+  // Build the notes bookmarklet for this ticket
+  var bmCode="javascript:(function(){"
+    +"if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab! Must be on the Help Desk tab.');return;}"
+    +"var id='"+id+"';"
+    +"var ind=document.createElement('div');"
+    +"ind.style='position:fixed;top:20px;right:20px;background:#534AB7;color:#fff;padding:10px 16px;border-radius:8px;z-index:9999;font-family:sans-serif;font-size:13px';"
+    +"ind.textContent='Loading notes for #"+id+"...';"
+    +"document.body.appendChild(ind);"
+    +"fetch('https://helpdesk.smalley.com/api/v3/requests/'+id+'/notes?SUBREQUEST=XMLHTTP',{credentials:'include'})"
+    +".then(function(r){return r.json();})"
+    +".then(function(d){"
+      +"var noteList=d.notes||[];"
+      +"return Promise.all(noteList.map(function(n){"
+        +"return fetch('https://helpdesk.smalley.com/api/v3/requests/'+id+'/notes/'+n.id+'?SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){return r.json();}).catch(function(){return{note:n};});"
+      +"}));"
+    +"})"
+    +".then(function(details){"
+      +"var parsed=details.map(function(d){"
+        +"var n=d.note||{};"
+        +"var div=document.createElement('div');div.innerHTML=n.description||'';var text=div.textContent||'';"
+        +"return{by:(n.added_by&&n.added_by.name)||'Unknown',time:(n.added_time&&n.added_time.display_value)||'',text:text};"
+      +"});"
+      +"return fetch('https://helpdesk.smalley.com/api/v3/requests/'+id+'?SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){return r.json();}).catch(function(){return{};}).then(function(td){"
+        +"var div=document.createElement('div');div.innerHTML=(td.request&&td.request.description)||'';var desc=div.textContent||'';"
+        +"var t=window.opener;"
+        +"if(t){t.postMessage({type:'HD_NOTES',id:id,notes:parsed,desc:desc},'*');ind.textContent='Notes sent! Switch back to dashboard.';}"
+        +"else{ind.textContent='Dashboard not found. Open dashboard first.';}"
+        +"setTimeout(function(){ind.remove();},3000);"
+      +"});"
+    +"})"
+    +".catch(function(e){ind.textContent='Error: '+e.message;});})();";
+
+  // Open help desk popup and show instructions
+  var popup=window.open('https://helpdesk.smalley.com/WorkOrder.do?woMode=viewWO&woID='+id,'_hdNotes'+id,'width=1000,height=700,left=100,top=100');
+
+  // Show inline overlay inside the expanded row
+  var overlayId='notes-overlay-'+id;
+  var existing=document.getElementById(overlayId);
+  if(existing) existing.remove();
+  var ov=document.createElement('div');
+  ov.id=overlayId;
+  ov.style.cssText='background:#EEEDFE;border:0.5px solid #7F77DD;border-radius:8px;padding:12px 14px;margin-top:8px';
+  ov.innerHTML='<div style="font-size:12px;font-weight:500;color:#534AB7;margin-bottom:8px">Load Notes from Help Desk</div>'
+    +(popup?'<p style="font-size:12px;color:#3B6D11;background:#EAF3DE;padding:6px 10px;border-radius:6px;margin-bottom:8px">Ticket #'+id+' opened in help desk tab</p>':'')
+    +'<p style="font-size:12px;color:#555;margin-bottom:8px">Drag this bookmark to your bar, then click it while on the help desk tab:</p>'
+    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 10px;background:#fff;border-radius:6px">'
+    +'<a href="'+bmCode+'" onclick="alert(\'Drag this to your bookmarks bar\');return false;" style="font-size:12px;font-weight:500;color:#534AB7;text-decoration:none;padding:4px 12px;background:#EEEDFE;border-radius:6px;border:0.5px solid #7F77DD;cursor:grab;white-space:nowrap">Load Notes #'+id+'</a>'
+    +'<span style="font-size:11px;color:#888">← drag to bookmarks bar, then click on help desk tab</span>'
+    +'</div>'
+    +'<button onclick="window.removeEventListener(\'message\',window._lastNoteHandler);document.getElementById(\''+overlayId+'\').remove();document.getElementById(\'rb-'+id+'\').textContent=\'↻ Reload\';" style="font-size:11px;padding:3px 10px;border:0.5px solid #d0cec8;border-radius:6px;background:#fff;cursor:pointer;font-family:inherit">Cancel</button>';
+  if(area) area.after(ov);
 }
 </script>
 <script>
