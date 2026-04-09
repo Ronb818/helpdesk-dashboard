@@ -264,6 +264,10 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
       <div class="card"><h2>Category mix</h2><div class="chart-range" id="rangeLabel3"></div><div class="bar-wrap" id="catBars"></div></div>
       <div class="card"><h2>Priority breakdown</h2><div class="chart-range" id="rangeLabel4"></div><div class="bar-wrap" id="priBars"></div></div>
     </div>
+    <div class="row2">
+      <div class="card"><h2>Avg closure time by technician</h2><div class="chart-range" id="rangeLabel5"></div><div class="bar-wrap" id="closureBars"></div></div>
+      <div class="card"><h2>Tickets resolved by technician</h2><div class="chart-range" id="rangeLabel6"></div><div class="bar-wrap" id="resolvedByBars"></div></div>
+    </div>
   </div>
   <!-- Tickets -->
   <div id="tab-tickets" class="view">
@@ -453,7 +457,63 @@ function renderAll(){
   bars('assignBars',countBy(tixRange,'asgn'),function(){return '#7F77DD';});
   bars('catBars',countBy(tixRange,'cat'),cColor);
   bars('priBars',countBy(tixRange,'pri'),pColor);
+  // Avg closure time per technician
+  ['rangeLabel5','rangeLabel6'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.textContent=rangeLabel;
+  });
+  renderClosureBars(tixRange);
   renderTix();
+}
+
+// ── Closure time by technician ────────────────────────────────────────────
+function renderClosureBars(tixRange){
+  // Group resolved tickets by technician
+  var byTech={};
+  tixRange.forEach(function(t){
+    if(!t.resolvedMs||!t.createdMs||t.resolvedMs<=0||t.createdMs<=0) return;
+    var tech=t.asgn||'Unassigned';
+    if(!byTech[tech]) byTech[tech]={totalMs:0,count:0};
+    byTech[tech].totalMs+=(t.resolvedMs-t.createdMs);
+    byTech[tech].count++;
+  });
+
+  // Build avg closure time entries, sorted fastest to slowest
+  var entries=Object.keys(byTech).map(function(tech){
+    var avgHrs=byTech[tech].totalMs/byTech[tech].count/(1000*60*60);
+    var label;
+    if(avgHrs<1) label=Math.round(avgHrs*60)+'m';
+    else if(avgHrs<24) label=avgHrs.toFixed(1)+'h';
+    else label=(avgHrs/24).toFixed(1)+'d';
+    return{tech:tech, avgHrs:avgHrs, count:byTech[tech].count, label:label};
+  }).sort(function(a,b){return a.avgHrs-b.avgHrs;});
+
+  var closureEl=document.getElementById('closureBars');
+  if(!closureEl) return;
+  if(!entries.length){
+    closureEl.innerHTML='<span style="font-size:12px;color:#aaa;font-style:italic">No resolved tickets with timestamp data in range. Run SD Refresh to load closure times.</span>';
+    document.getElementById('resolvedByBars').innerHTML='<span style="font-size:12px;color:#aaa;font-style:italic">No data in range.</span>';
+    return;
+  }
+
+  // Closure time bar chart — bar width proportional to hours (longest = 100%)
+  var maxHrs=entries[entries.length-1].avgHrs;
+  closureEl.innerHTML=entries.slice(0,10).map(function(e){
+    var pct=Math.max(8,Math.round(e.avgHrs/maxHrs*100));
+    // Color: green for fast, orange for medium, red for slow
+    var color=e.avgHrs<4?'#639922':e.avgHrs<24?'#BA7517':'#E24B4A';
+    return '<div class="bar-row">'
+      +'<span class="bar-label" title="'+esc(e.tech)+' ('+e.count+' tickets)">'+esc(e.tech)+'</span>'
+      +'<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'
+      +'<span class="bar-count">'+e.label+'</span>'
+      +'</div>';
+  }).join('');
+
+  // Resolved count bar chart sorted most to least
+  var resolved=Object.keys(byTech).map(function(tech){
+    return[tech,byTech[tech].count];
+  }).sort(function(a,b){return b[1]-a[1];});
+  bars('resolvedByBars',resolved,function(){return '#639922';});
 }
 
 // ── Date range helpers ────────────────────────────────────────────────────
