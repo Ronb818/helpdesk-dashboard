@@ -94,7 +94,17 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
 .new-tickets h3{font-size:12px;font-weight:500;color:#085041;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .new-dot{width:8px;height:8px;background:#3B6D11;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.welcome-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.date-bar{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.date-bar label{font-size:11px;color:#888;white-space:nowrap}
+.date-bar input[type=date]{font-size:12px;padding:4px 8px;border:0.5px solid #d0cec8;border-radius:6px;font-family:inherit;outline:none;color:#1a1a18}
+.date-bar input[type=date]:focus{border-color:#7F77DD}
+.preset-btns{display:flex;gap:4px;flex-wrap:wrap}
+.preset{font-size:11px;padding:3px 9px;border-radius:20px;border:0.5px solid #d0cec8;background:#fafaf7;cursor:pointer;color:#555;white-space:nowrap}
+.preset.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
+.date-bar .load-range-btn{font-size:12px;padding:5px 12px;border:0.5px solid #7F77DD;border-radius:8px;background:#EEEDFE;color:#534AB7;cursor:pointer;font-family:inherit;white-space:nowrap;margin-left:auto}
+.date-bar .load-range-btn:hover{background:#d8d6fe}
+.range-count{font-size:11px;color:#888;white-space:nowrap}
+
 .welcome-card{background:#fff;border-radius:14px;padding:28px;max-width:480px;width:92%;box-shadow:0 8px 32px rgba(0,0,0,.18);max-height:90vh;overflow-y:auto}
 .welcome-card h2{font-size:17px;font-weight:500;margin-bottom:6px;color:#1a1a18}
 .welcome-card .tagline{font-size:13px;color:#888;margin-bottom:20px}
@@ -223,6 +233,22 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
   </div>
   <!-- Overview -->
   <div id="tab-overview" class="view active">
+    <!-- Date range picker -->
+    <div class="date-bar">
+      <div class="preset-btns">
+        <span class="preset" onclick="setPreset(7,this)">7 days</span>
+        <span class="preset active" onclick="setPreset(30,this)">30 days</span>
+        <span class="preset" onclick="setPreset(60,this)">60 days</span>
+        <span class="preset" onclick="setPreset(90,this)">90 days</span>
+        <span class="preset" onclick="setPreset(0,this)">All loaded</span>
+      </div>
+      <label>From</label>
+      <input type="date" id="dateFrom" onchange="onDateChange()"/>
+      <label>To</label>
+      <input type="date" id="dateTo" onchange="onDateChange()"/>
+      <span class="range-count" id="rangeCount"></span>
+      <button class="load-range-btn" onclick="loadDateRange()" id="loadRangeBtn">↻ Load from Help Desk</button>
+    </div>
     <div class="kpi-grid">
       <div class="kpi"><div class="kpi-label">Total Tickets</div><div class="kpi-val" id="kpiTotal">-</div><div class="kpi-sub">All time</div></div>
       <div class="kpi"><div class="kpi-label">Open / In Progress</div><div class="kpi-val" id="kpiOpen">-</div><div class="kpi-sub">Last 30 days</div></div>
@@ -370,31 +396,153 @@ function sBadge(s){
   return '<span class="pill '+c+'">'+esc(s)+'</span>';
 }
 function renderAll(){
-  var now=new Date();
-  var cutoff=new Date(now.getTime()-30*24*60*60*1000);
-  var tix30=TICKETS.filter(function(t){
+  var fromEl=document.getElementById('dateFrom');
+  var toEl=document.getElementById('dateTo');
+  var fromDate=fromEl&&fromEl.value?new Date(fromEl.value+'T00:00:00'):new Date(Date.now()-30*24*60*60*1000);
+  var toDate=toEl&&toEl.value?new Date(toEl.value+'T23:59:59'):new Date();
+  var tixRange=TICKETS.filter(function(t){
     if(!t.created) return true;
     var d=new Date(t.created);
-    return isNaN(d.getTime())||d>=cutoff;
+    if(isNaN(d.getTime())) return true;
+    return d>=fromDate&&d<=toDate;
   });
   var fmt=function(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
-  var rangeLabel=fmt(cutoff)+' - '+fmt(now)+' ('+tix30.length+' tickets)';
+  var rangeLabel=fmt(fromDate)+' - '+fmt(toDate)+' ('+tixRange.length+' tickets)';
   ['rangeLabel','rangeLabel2','rangeLabel3','rangeLabel4'].forEach(function(id){
     var el=document.getElementById(id);
     if(el) el.textContent=rangeLabel;
   });
-  var o=tix30.filter(function(t){return t.status.includes('Open')||t.status.includes('Progress');}).length;
-  var r=tix30.filter(function(t){return t.status==='Resolved';}).length;
-  var h=tix30.filter(function(t){return t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'));}).length;
+  var rc=document.getElementById('rangeCount');
+  if(rc) rc.textContent=tixRange.length+' of '+TICKETS.length+' tickets in range';
+  var o=tixRange.filter(function(t){return t.status.includes('Open')||t.status.includes('Progress');}).length;
+  var r=tixRange.filter(function(t){return t.status==='Resolved';}).length;
+  var h=tixRange.filter(function(t){return t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'));}).length;
+  var kpiSubText=fmt(fromDate)+' - '+fmt(toDate);
   document.getElementById('kpiTotal').textContent=totalTicketCount.toLocaleString();
   document.getElementById('kpiOpen').textContent=o;
   document.getElementById('kpiResolved').textContent=r;
   document.getElementById('kpiHigh').textContent=h;
-  bars('statusBars',countBy(tix30,'status'),sColor);
-  bars('assignBars',countBy(tix30,'asgn'),function(){return '#7F77DD';});
-  bars('catBars',countBy(tix30,'cat'),cColor);
-  bars('priBars',countBy(tix30,'pri'),pColor);
+  // Update KPI subtitles to show selected range
+  document.querySelectorAll('.kpi-sub').forEach(function(el,i){
+    if(i>0) el.textContent=kpiSubText;
+  });
+  bars('statusBars',countBy(tixRange,'status'),sColor);
+  bars('assignBars',countBy(tixRange,'asgn'),function(){return '#7F77DD';});
+  bars('catBars',countBy(tixRange,'cat'),cColor);
+  bars('priBars',countBy(tixRange,'pri'),pColor);
   renderTix();
+}
+
+// ── Date range helpers ────────────────────────────────────────────────────
+function toInputDate(d){
+  var y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return y+'-'+m+'-'+day;
+}
+function setPreset(days,el){
+  document.querySelectorAll('.preset').forEach(function(p){p.classList.remove('active');});
+  el.classList.add('active');
+  var to=new Date();
+  var from=days===0?new Date(0):new Date(to.getTime()-days*24*60*60*1000);
+  document.getElementById('dateFrom').value=toInputDate(from);
+  document.getElementById('dateTo').value=toInputDate(to);
+  renderAll();
+}
+function onDateChange(){
+  document.querySelectorAll('.preset').forEach(function(p){p.classList.remove('active');});
+  renderAll();
+}
+function initDatePicker(){
+  var to=new Date();
+  var from=new Date(to.getTime()-30*24*60*60*1000);
+  document.getElementById('dateFrom').value=toInputDate(from);
+  document.getElementById('dateTo').value=toInputDate(to);
+}
+// ── Load date range from Help Desk (paginated) ────────────────────────────
+function loadDateRange(){
+  var fromVal=document.getElementById('dateFrom').value;
+  var toVal=document.getElementById('dateTo').value;
+  if(!fromVal||!toVal){toast('Please select a date range first.');return;}
+  var btn=document.getElementById('loadRangeBtn');
+  btn.textContent='Opening help desk...';
+  // Register postMessage handler
+  window._hdMsgHandler=function(e){
+    if(!e.data||e.data.type!=='HD_REFRESH') return;
+    receiveHDData(e.data.requests,e.data.total);
+  };
+  window.removeEventListener('message',window._hdMsgHandler);
+  window.addEventListener('message',window._hdMsgHandler);
+  // Build bookmarklet instructions with date range embedded
+  var popup=window.open('https://helpdesk.smalley.com/WOListView.do','_hdRefresh','width=1000,height=700,left=100,top=100');
+  // Show a custom overlay for date range loading
+  var ov=document.getElementById('bm-overlay');
+  if(!ov){
+    ov=document.createElement('div');
+    ov.id='bm-overlay';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center';
+    document.body.appendChild(ov);
+  }
+  // Build paginated bookmarklet with date range filter (client-side filtered)
+  var bmCode="javascript:(function(){"
+    +"if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab! Switch to the help desk tab first.');return;}"
+    +"var fromTs=new Date('"+fromVal+"T00:00:00').getTime();"
+    +"var toTs=new Date('"+toVal+"T23:59:59').getTime();"
+    +"var allTickets=[];"
+    +"var page=1;"
+    +"var perPage=100;"
+    +"var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];"
+    +"var btn=document.createElement('div');"
+    +"btn.id='sd-loading';"
+    +"btn.style='position:fixed;top:20px;right:20px;background:#534AB7;color:#fff;padding:12px 18px;border-radius:8px;z-index:9999;font-family:sans-serif;font-size:13px';"
+    +"btn.textContent='SD Refresh: Loading page 1...';"
+    +"document.body.appendChild(btn);"
+    +"function fetchPage(p){"
+      +"var q=encodeURIComponent(JSON.stringify({list_info:{row_count:String(perPage),sort_order:'desc',sort_field:'id',start_index:String((p-1)*perPage+1),get_total_count:true,fields_required:f}}));"
+      +"fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'})"
+        +".then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})"
+        +".then(function(d){"
+          +"var reqs=d.requests||[];"
+          +"var total=d.list_info&&d.list_info.total_count?parseInt(d.list_info.total_count):0;"
+          +"var hasMore=d.list_info&&d.list_info.has_more_rows;"
+          +"reqs.forEach(function(t){"
+            +"var created=(t.created_time&&t.created_time.value)?parseInt(t.created_time.value):0;"
+            +"if(created>=fromTs&&created<=toTs) allTickets.push(t);"
+          +"});"
+          +"var oldestOnPage=reqs.length?parseInt((reqs[reqs.length-1].created_time&&reqs[reqs.length-1].created_time.value)||0):0;"
+          +"if(hasMore&&oldestOnPage>=fromTs){"
+            +"p++;"
+            +"btn.textContent='SD Refresh: Loading page '+p+' ('+allTickets.length+' found)...';"
+            +"fetchPage(p);"
+          +"}else{"
+            +"btn.textContent='Done! Found '+allTickets.length+' tickets.';"
+            +"setTimeout(function(){var b=document.getElementById('sd-loading');if(b)b.remove();},3000);"
+            +"var t=window.opener;"
+            +"if(t){t.postMessage({type:'HD_REFRESH',requests:allTickets,total:total},'*');}"
+            +"else{alert('Dashboard not found. Make sure you clicked Load from Help Desk on the dashboard first.');}"
+          +"}"
+        +"})"
+        +".catch(function(e){btn.textContent='Error: '+e.message;});"
+    +"}"
+    +"fetchPage(1);"
+  +"})();";
+  ov.style.display='flex';
+  ov.innerHTML='<div style="background:#fff;border-radius:12px;padding:24px;max-width:500px;width:90%;box-shadow:0 4px 24px rgba(0,0,0,.2)">'
+    +'<h2 style="font-size:15px;font-weight:500;margin-bottom:10px">Load Date Range from Help Desk</h2>'
+    +(popup?'<p style="font-size:13px;color:#3B6D11;background:#EAF3DE;padding:8px 12px;border-radius:8px;margin-bottom:12px">Help desk tab opened</p>':'')
+    +'<p style="font-size:13px;color:#666;margin-bottom:6px">Loading tickets from <strong>'+fromVal+'</strong> to <strong>'+toVal+'</strong>.</p>'
+    +'<p style="font-size:13px;color:#666;margin-bottom:14px">This bookmarklet <strong>automatically pages through all results</strong> — it will keep fetching until all tickets in your date range are loaded.</p>'
+    +'<p style="font-size:12px;font-weight:500;color:#555;margin-bottom:6px">Drag this updated bookmark to your bar (replaces the old one):</p>'
+    +'<div style="margin-bottom:14px;padding:10px 12px;background:#f5f5f0;border-radius:8px;display:flex;align-items:center;gap:10px">'
+    +'<a href="'+bmCode+'" onclick="alert(\'Drag to bookmarks bar — do not click here.\');return false;" style="font-size:13px;font-weight:500;color:#534AB7;text-decoration:none;padding:6px 14px;background:#EEEDFE;border-radius:6px;border:0.5px solid #7F77DD;cursor:grab;white-space:nowrap">SD Refresh</a>'
+    +'<span style="font-size:12px;color:#888">← drag to bookmarks bar</span>'
+    +'</div>'
+    +'<ol style="font-size:13px;color:#666;line-height:2;padding-left:18px;margin-bottom:16px">'
+    +'<li>Wait for the help desk tab to load</li>'
+    +'<li>Switch to the help desk tab</li>'
+    +'<li>Click <strong>SD Refresh</strong> — it will page through all results automatically</li>'
+    +'<li>Switch back here when done</li>'
+    +'</ol>'
+    +'<button onclick="document.getElementById(\'bm-overlay\').style.display=\'none\';document.getElementById(\'loadRangeBtn\').textContent=\'↻ Load from Help Desk\'" style="width:100%;padding:9px;font-size:13px;border:0.5px solid #d0cec8;border-radius:8px;background:#fff;cursor:pointer;font-family:inherit">Close</button>'
+    +'</div>';
 }
 
 // ── Search & Filter ────────────────────────────────────────────────────────
@@ -809,6 +957,7 @@ window.onload=function(){
     el.classList.toggle('active',parseInt(el.dataset.val)===intervalMin);
   });
   if(apiKey||PROXY_URL||GH_TOKEN) document.getElementById('setupModal').style.display='none';
+  initDatePicker();
   // Show welcome guide to first-time visitors with no key
   var welcomed=localStorage.getItem('hd_welcomed');
   if(!welcomed&&!apiKey&&!PROXY_URL&&!DEFAULT_AI_KEY){
