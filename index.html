@@ -94,7 +94,18 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
 .new-tickets h3{font-size:12px;font-weight:500;color:#085041;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .new-dot{width:8px;height:8px;background:#3B6D11;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.setup-modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:999}
+.welcome-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.welcome-card{background:#fff;border-radius:14px;padding:28px;max-width:480px;width:92%;box-shadow:0 8px 32px rgba(0,0,0,.18);max-height:90vh;overflow-y:auto}
+.welcome-card h2{font-size:17px;font-weight:500;margin-bottom:6px;color:#1a1a18}
+.welcome-card .tagline{font-size:13px;color:#888;margin-bottom:20px}
+.step-list{list-style:none;padding:0;margin-bottom:20px}
+.step-list li{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;font-size:13px;color:#444;line-height:1.6}
+.step-num{width:24px;height:24px;border-radius:50%;background:#EEEDFE;color:#534AB7;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-list a{color:#185FA5}
+.welcome-note{font-size:12px;color:#888;background:#f5f5f0;border-radius:8px;padding:10px 12px;margin-bottom:18px;line-height:1.6}
+.welcome-note strong{color:#555}
+.welcome-btns{display:flex;gap:8px}
+
 .setup-card{background:#fff;border-radius:12px;padding:24px;max-width:420px;width:90%;box-shadow:0 4px 24px rgba(0,0,0,.12)}
 .setup-card h2{font-size:15px;font-weight:500;margin-bottom:8px}
 .setup-card p{font-size:13px;color:#666;line-height:1.6;margin-bottom:14px}
@@ -108,6 +119,44 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
 </style>
 </head>
 <body>
+<!-- Welcome / First-time setup guide -->
+<div class="welcome-modal" id="welcomeModal" style="display:none">
+  <div class="welcome-card">
+    <h2>👋 Welcome to the Smalley IT Help Desk Dashboard</h2>
+    <p class="tagline">To use the <strong>Ask AI</strong> feature, you need a free Anthropic API key. Takes about 2 minutes.</p>
+    <ol class="step-list">
+      <li>
+        <span class="step-num">1</span>
+        <span>Go to <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> and sign up for a free account (no credit card required to start).</span>
+      </li>
+      <li>
+        <span class="step-num">2</span>
+        <span>Once logged in, click <strong>API Keys</strong> in the left sidebar, then click <strong>Create Key</strong>. Give it any name (e.g. "Smalley Dashboard").</span>
+      </li>
+      <li>
+        <span class="step-num">3</span>
+        <span><strong>Copy the key immediately</strong> — it starts with <code style="background:#f0efe8;padding:1px 5px;border-radius:4px;font-size:11px">sk-ant-</code> and is only shown once.</span>
+      </li>
+      <li>
+        <span class="step-num">4</span>
+        <span>Come back here and click <strong>Add My Key</strong> below, then paste it in.</span>
+      </li>
+    </ol>
+    <div class="welcome-note">
+      <strong>Free tier:</strong> Anthropic gives every new account $5 in free credit — enough for thousands of questions. Your key is stored only in <em>your</em> browser and is never shared with anyone else.
+    </div>
+    <div class="welcome-btns">
+      <a href="https://console.anthropic.com" target="_blank" style="flex:1">
+        <button class="btn btn-primary" style="width:100%;padding:9px;font-size:13px">Get Free API Key ↗</button>
+      </a>
+      <button class="btn btn-primary" style="flex:1;padding:9px;font-size:13px" onclick="closeWelcome(true)">I Have a Key — Add It</button>
+    </div>
+    <div style="margin-top:10px;text-align:center">
+      <button onclick="closeWelcome(false)" style="font-size:12px;color:#aaa;background:none;border:none;cursor:pointer;font-family:inherit">Skip for now — browse read-only</button>
+    </div>
+  </div>
+</div>
+
 <!-- Setup Modal -->
 <div class="setup-modal" id="setupModal">
   <div class="setup-card">
@@ -243,7 +292,7 @@ var HD='https://helpdesk.smalley.com';
 var GH_TOKEN='', GH_REPO='Ronb818/helpdesk-dashboard';
 var PROXY_URL='';
 // Default shared key — set a spending limit at console.anthropic.com to cap costs
-var DEFAULT_AI_KEY='';
+var DEFAULT_AI_KEY='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';
 
 var SEED=[
 {id:'69534',cat:'Request',subj:'Addition to PRD Environment - BOL Tracked Not Invoiced Email',req:'Keith Schaecher',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 11:17 AM',due:'-',pri:'Medium',desc:'',notes:[]},
@@ -713,6 +762,11 @@ function ask(q){
 
 // ── Setup ──────────────────────────────────────────────────────────────────
 function openSetup(){document.getElementById('setupModal').style.display='flex';}
+function closeWelcome(openSettings){
+  document.getElementById('welcomeModal').style.display='none';
+  localStorage.setItem('hd_welcomed','1');
+  if(openSettings) openSetup();
+}
 function saveSetup(){
   var px=document.getElementById('proxyUrlInput').value.trim();
   var k=document.getElementById('apiKeyInput').value.trim();
@@ -720,14 +774,18 @@ function saveSetup(){
   var sel=document.querySelector('#intervalSelect .int-opt.active');
   if(px){PROXY_URL=px;localStorage.setItem('hd_proxy_url',px);}
   if(k){apiKey=k;localStorage.setItem('hd_api_key',k);}
-  if(gh){GH_TOKEN=gh;localStorage.setItem('hd_gh_token',gh);}https://github.com/Ronb818/helpdesk-dashboard/blob/main/index.html
+  if(gh){GH_TOKEN=gh;localStorage.setItem('hd_gh_token',gh);}
   if(sel){intervalMin=parseInt(sel.dataset.val);localStorage.setItem('hd_interval',intervalMin);}
   document.getElementById('setupModal').style.display='none';
   startRefreshCycle();
   toast('Settings saved.'+(px?' Shared AI proxy active.':k?' Personal AI key active.':''));
 }
 // Patch in proxy/key saving after gh token block above
-function skipSetup(){document.getElementById('setupModal').style.display='none';startRefreshCycle();}
+function skipSetup(){
+  document.getElementById('setupModal').style.display='none';
+  localStorage.setItem('hd_welcomed','1');
+  startRefreshCycle();
+}
 document.querySelectorAll('#intervalSelect .int-opt').forEach(function(el){
   el.onclick=function(){
     document.querySelectorAll('#intervalSelect .int-opt').forEach(function(e){e.classList.remove('active');});
@@ -751,6 +809,12 @@ window.onload=function(){
     el.classList.toggle('active',parseInt(el.dataset.val)===intervalMin);
   });
   if(apiKey||PROXY_URL||GH_TOKEN) document.getElementById('setupModal').style.display='none';
+  // Show welcome guide to first-time visitors with no key
+  var welcomed=localStorage.getItem('hd_welcomed');
+  if(!welcomed&&!apiKey&&!PROXY_URL&&!DEFAULT_AI_KEY){
+    document.getElementById('welcomeModal').style.display='flex';
+    document.getElementById('setupModal').style.display='none';
+  }
   // Always try to load shared data from GitHub first, fall back to localStorage/seed
   loadSharedData(function(){
     if(!TICKETS.length){
