@@ -20,7 +20,7 @@ header h1{font-size:15px;font-weight:500}
 .btn-primary{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
 .btn-primary:hover{background:#e0dffe}
 .main{max-width:1300px;margin:0 auto;padding:14px 20px}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
 .kpi{background:#fff;border:0.5px solid #e0ded6;border-radius:10px;padding:12px 14px}
 .kpi-label{font-size:10px;color:#888;margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
 .kpi-val{font-size:24px;font-weight:500}
@@ -125,7 +125,7 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
 .int-opt.active{background:#EEEDFE;color:#534AB7;border-color:#7F77DD}
 .toast{position:fixed;bottom:20px;right:20px;background:#3B6D11;color:#fff;font-size:12px;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
 .toast.show{opacity:1}
-@media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}.hdr-right{width:100%}.detail-cols{grid-template-columns:1fr}}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.row2{grid-template-columns:1fr}.hdr-right{width:100%}.detail-cols{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -254,6 +254,7 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
       <div class="kpi"><div class="kpi-label">Open / In Progress</div><div class="kpi-val" id="kpiOpen">-</div><div class="kpi-sub">Last 30 days</div></div>
       <div class="kpi"><div class="kpi-label">Resolved</div><div class="kpi-val" id="kpiResolved">-</div><div class="kpi-sub">Last 30 days</div></div>
       <div class="kpi"><div class="kpi-label">High Priority Open</div><div class="kpi-val" id="kpiHigh">-</div><div class="kpi-sub">Last 30 days</div></div>
+      <div class="kpi"><div class="kpi-label">Avg Closure Time</div><div class="kpi-val" id="kpiClosure">-</div><div class="kpi-sub" id="kpiClosureSub">Resolved tickets</div></div>
     </div>
     <div class="row2">
       <div class="card"><h2>Status breakdown</h2><div class="chart-range" id="rangeLabel"></div><div class="bar-wrap" id="statusBars"></div></div>
@@ -422,12 +423,26 @@ function renderAll(){
   var r=tixRange.filter(function(t){return t.status==='Resolved';}).length;
   var cl=tixRange.filter(function(t){return t.status==='Closed';}).length;
   var h=tixRange.filter(function(t){return t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'));}).length;
+  // Avg closure time
+  var closureTix=tixRange.filter(function(t){return t.resolvedMs&&t.resolvedMs>0&&t.createdMs&&t.createdMs>0;});
+  var closureStr='-';
+  if(closureTix.length){
+    var totalMs=closureTix.reduce(function(sum,t){return sum+(t.resolvedMs-t.createdMs);},0);
+    var avgMs=totalMs/closureTix.length;
+    var avgHrs=avgMs/(1000*60*60);
+    if(avgHrs<1) closureStr=Math.round(avgMs/(1000*60))+'m';
+    else if(avgHrs<24) closureStr=avgHrs.toFixed(1)+'h';
+    else closureStr=(avgHrs/24).toFixed(1)+' days';
+  }
   var rangeSubText=fmt(fromDate)+' - '+fmt(toDate);
   // Update KPI values
   document.getElementById('kpiTotal').textContent=totalTicketCount.toLocaleString();
   document.getElementById('kpiOpen').textContent=o;
   document.getElementById('kpiResolved').textContent=r+cl;
   document.getElementById('kpiHigh').textContent=h;
+  document.getElementById('kpiClosure').textContent=closureStr;
+  var csub=document.getElementById('kpiClosureSub');
+  if(csub) csub.textContent=closureTix.length+(closureTix.length===1?' ticket':' tickets')+' in range';
   // Update KPI subtitles with date range
   var kpiSubs=document.querySelectorAll('.kpi-sub');
   if(kpiSubs[0]) kpiSubs[0].textContent='All time';
@@ -697,7 +712,9 @@ function receiveHDData(requests,total,notesMap){
       asgn:(t.technician&&t.technician.name)||'Unassigned',
       status:(t.status&&t.status.name)||'Open',
       created:(t.created_time&&t.created_time.display_value)||'',
+      createdMs:t.created_time&&t.created_time.value?parseInt(t.created_time.value):0,
       due:(t.due_by_time&&t.due_by_time.display_value)||'-',
+      resolvedMs:t.resolved_time&&t.resolved_time.value?parseInt(t.resolved_time.value):0,
       pri:(t.priority&&t.priority.name)||'Medium',
       site:(t.site&&t.site.name)||'-',
       desc:p.desc||'', notes:notes
@@ -719,7 +736,7 @@ function receiveHDData(requests,total,notesMap){
   if(GH_TOKEN) pushToGitHub();
 }
 function showBMInstructions(popupOpened){
-  var bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nMust be clicked on the Help Desk tab (helpdesk.smalley.com).');return;}var all=[];var page=1;var perPage=100;var totalCount=0;var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time','has_notes'];var ind=document.createElement('div');ind.style='position:fixed;top:20px;right:20px;background:#534AB7;color:#fff;padding:12px 18px;border-radius:8px;z-index:9999;font-family:sans-serif;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,.2)';ind.textContent='SD Refresh: Loading tickets...';document.body.appendChild(ind);function fetchNotes(tickets,cb){var notesMap={};var open=tickets.filter(function(t){var s=(t.status&&t.status.name)||'';return t.has_notes&&(s.indexOf('Open')>-1||s.indexOf('Progress')>-1||s.indexOf('Hold')>-1);}).slice(0,40);if(!open.length){cb(notesMap);return;}var done=0;open.forEach(function(t){fetch('https://helpdesk.smalley.com/api/v3/requests/'+t.id+'/notes?SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){return r.json();}).then(function(d){var noteList=d.notes||[];return Promise.all(noteList.map(function(n){return fetch('https://helpdesk.smalley.com/api/v3/requests/'+t.id+'/notes/'+n.id+'?SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){return r.json();}).catch(function(){return{};});}));}).then(function(details){notesMap[t.id]=details.map(function(d){var n=d.note||{};var div=document.createElement('div');div.innerHTML=(n.description)||'';return{by:(n.added_by&&n.added_by.name)||'Unknown',time:(n.added_time&&n.added_time.display_value)||'',text:div.textContent.replace(/[\\u200B-\\u200D\\uFEFF]/g,'').trim()};});}).catch(function(){}).finally(function(){done++;if(done===open.length)cb(notesMap);});});}function go(p){var q=encodeURIComponent(JSON.stringify({list_info:{row_count:String(perPage),sort_order:'desc',sort_field:'id',start_index:String((p-1)*perPage+1),get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(d.list_info&&d.list_info.total_count)totalCount=parseInt(d.list_info.total_count);all=all.concat(reqs);var hasMore=d.list_info&&d.list_info.has_more_rows;ind.textContent='SD Refresh: '+all.length+' of '+totalCount+' loaded...';if(hasMore){go(p+1);}else{ind.textContent='Loading notes for open tickets...';fetchNotes(all,function(notesMap){ind.textContent='Done! '+all.length+' tickets + notes loaded.';setTimeout(function(){ind.remove();},3000);var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:all,total:totalCount,notesMap:notesMap},'*');}else{alert('Dashboard not found. Click Refresh from Help Desk on the dashboard first.');}});}}).catch(function(e){ind.textContent='Error: '+e.message;setTimeout(function(){ind.remove();},5000);});}go(1);})();";
+  var bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nMust be clicked on the Help Desk tab (helpdesk.smalley.com).');return;}var all=[];var page=1;var perPage=100;var totalCount=0;var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time','has_notes','resolved_time'];var ind=document.createElement('div');ind.style='position:fixed;top:20px;right:20px;background:#534AB7;color:#fff;padding:12px 18px;border-radius:8px;z-index:9999;font-family:sans-serif;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,.2)';ind.textContent='SD Refresh: Loading tickets...';document.body.appendChild(ind);function fetchNotes(tickets,cb){var notesMap={};var open=tickets.filter(function(t){var s=(t.status&&t.status.name)||'';return t.has_notes&&(s.indexOf('Open')>-1||s.indexOf('Progress')>-1||s.indexOf('Hold')>-1);}).slice(0,40);if(!open.length){cb(notesMap);return;}var done=0;open.forEach(function(t){fetch('https://helpdesk.smalley.com/api/v3/requests/'+t.id+'/notes?SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){return r.json();}).then(function(d){var noteList=d.notes||[];return Promise.all(noteList.map(function(n){return fetch('https://helpdesk.smalley.com/api/v3/requests/'+t.id+'/notes/'+n.id+'?SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){return r.json();}).catch(function(){return{};});}));}).then(function(details){notesMap[t.id]=details.map(function(d){var n=d.note||{};var div=document.createElement('div');div.innerHTML=(n.description)||'';return{by:(n.added_by&&n.added_by.name)||'Unknown',time:(n.added_time&&n.added_time.display_value)||'',text:div.textContent.replace(/[\\u200B-\\u200D\\uFEFF]/g,'').trim()};});}).catch(function(){}).finally(function(){done++;if(done===open.length)cb(notesMap);});});}function go(p){var q=encodeURIComponent(JSON.stringify({list_info:{row_count:String(perPage),sort_order:'desc',sort_field:'id',start_index:String((p-1)*perPage+1),get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(d.list_info&&d.list_info.total_count)totalCount=parseInt(d.list_info.total_count);all=all.concat(reqs);var hasMore=d.list_info&&d.list_info.has_more_rows;ind.textContent='SD Refresh: '+all.length+' of '+totalCount+' loaded...';if(hasMore){go(p+1);}else{ind.textContent='Loading notes for open tickets...';fetchNotes(all,function(notesMap){ind.textContent='Done! '+all.length+' tickets + notes loaded.';setTimeout(function(){ind.remove();},3000);var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:all,total:totalCount,notesMap:notesMap},'*');}else{alert('Dashboard not found. Click Refresh from Help Desk on the dashboard first.');}});}}).catch(function(e){ind.textContent='Error: '+e.message;setTimeout(function(){ind.remove();},5000);});}go(1);})();";
   var ov=document.getElementById('bm-overlay');
   if(!ov){
     ov=document.createElement('div');
