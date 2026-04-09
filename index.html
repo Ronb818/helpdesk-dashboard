@@ -413,19 +413,27 @@ function renderAll(){
     if(el) el.textContent=rangeLabel;
   });
   var rc=document.getElementById('rangeCount');
-  if(rc) rc.textContent=tixRange.length+' of '+TICKETS.length+' tickets in range';
+  if(rc){
+    var msg=tixRange.length+' tickets in range';
+    if(TICKETS.length<totalTicketCount) msg+=' ('+TICKETS.length+' loaded of '+totalTicketCount.toLocaleString()+' total — use SD Refresh to load more)';
+    rc.textContent=msg;
+  }
   var o=tixRange.filter(function(t){return t.status.includes('Open')||t.status.includes('Progress');}).length;
   var r=tixRange.filter(function(t){return t.status==='Resolved';}).length;
+  var cl=tixRange.filter(function(t){return t.status==='Closed';}).length;
   var h=tixRange.filter(function(t){return t.pri==='High'&&(t.status.includes('Open')||t.status.includes('Progress'));}).length;
-  var kpiSubText=fmt(fromDate)+' - '+fmt(toDate);
+  var rangeSubText=fmt(fromDate)+' - '+fmt(toDate);
+  // Update KPI values
   document.getElementById('kpiTotal').textContent=totalTicketCount.toLocaleString();
   document.getElementById('kpiOpen').textContent=o;
-  document.getElementById('kpiResolved').textContent=r;
+  document.getElementById('kpiResolved').textContent=r+cl;
   document.getElementById('kpiHigh').textContent=h;
-  // Update KPI subtitles to show selected range
-  document.querySelectorAll('.kpi-sub').forEach(function(el,i){
-    if(i>0) el.textContent=kpiSubText;
-  });
+  // Update KPI subtitles with date range
+  var kpiSubs=document.querySelectorAll('.kpi-sub');
+  if(kpiSubs[0]) kpiSubs[0].textContent='All time';
+  if(kpiSubs[1]) kpiSubs[1].textContent=rangeSubText;
+  if(kpiSubs[2]) kpiSubs[2].textContent=rangeSubText;
+  if(kpiSubs[3]) kpiSubs[3].textContent=rangeSubText;
   bars('statusBars',countBy(tixRange,'status'),sColor);
   bars('assignBars',countBy(tixRange,'asgn'),function(){return '#7F77DD';});
   bars('catBars',countBy(tixRange,'cat'),cColor);
@@ -718,18 +726,18 @@ function receiveHDData(requests,total){
   TICKETS=refreshed.concat(TICKETS.filter(function(t){return !newIds.has(t.id);}));
   localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));
   var now=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('lastUpdated').textContent='Last refreshed '+now;
+  document.getElementById('lastUpdated').textContent='Last refreshed '+now+' ('+refreshed.length+' tickets)';
   localStorage.setItem('hd_last_refresh',Date.now());
   setBadge('live');
   renderAll();
-  toast('Loaded '+refreshed.length+' tickets from help desk');
+  toast('Loaded '+refreshed.length+' of '+totalTicketCount.toLocaleString()+' tickets');
   var ov=document.getElementById('bm-overlay');
   if(ov) ov.style.display='none';
   // Push shared data to GitHub so others see it too
   if(GH_TOKEN) pushToGitHub();
 }
 function showBMInstructions(popupOpened){
-  var bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nThis bookmark must be clicked while on the Help Desk tab (helpdesk.smalley.com).\\n\\nSteps:\\n1. Click Refresh from Help Desk on the dashboard\\n2. Wait for the help desk tab to load\\n3. Switch to the help desk tab\\n4. Click this bookmark');return;}var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var q=encodeURIComponent(JSON.stringify({list_info:{row_count:'100',sort_order:'desc',sort_field:'id',get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(!reqs.length){alert('No tickets returned. Please make sure you are logged in.');return;}var total=d.list_info&&d.list_info.total_count?parseInt(d.list_info.total_count):reqs.length;var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:reqs,total:total},'*');alert('Done! Sent '+reqs.length+' tickets to your dashboard.');}else{alert('Dashboard window not found.\\nClick Refresh from Help Desk on the dashboard first.');}}).catch(function(e){alert('Error: '+e.message);});})();";
+  var bmCode="javascript:(function(){if(window.location.hostname!=='helpdesk.smalley.com'){alert('Wrong tab!\\n\\nThis bookmark must be clicked while on the Help Desk tab (helpdesk.smalley.com).\\n\\nSteps:\\n1. Click Refresh from Help Desk on the dashboard\\n2. Wait for the help desk tab to load\\n3. Switch to the help desk tab\\n4. Click this bookmark');return;}var all=[];var page=1;var perPage=100;var totalCount=0;var f=['id','subject','requester','technician','status','priority','category','created_time','due_by_time'];var ind=document.createElement('div');ind.style='position:fixed;top:20px;right:20px;background:#534AB7;color:#fff;padding:12px 18px;border-radius:8px;z-index:9999;font-family:sans-serif;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,.2)';ind.textContent='SD Refresh: Loading...';document.body.appendChild(ind);function go(p){var q=encodeURIComponent(JSON.stringify({list_info:{row_count:String(perPage),sort_order:'desc',sort_field:'id',start_index:String((p-1)*perPage+1),get_total_count:true,fields_required:f}}));fetch('https://helpdesk.smalley.com/api/v3/requests?input_data='+q+'&SUBREQUEST=XMLHTTP',{credentials:'include'}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(d){var reqs=d.requests||[];if(d.list_info&&d.list_info.total_count)totalCount=parseInt(d.list_info.total_count);all=all.concat(reqs);var hasMore=d.list_info&&d.list_info.has_more_rows;ind.textContent='SD Refresh: '+all.length+' of '+totalCount+' loaded...';if(hasMore){go(p+1);}else{ind.textContent='Done! Loaded '+all.length+' tickets.';setTimeout(function(){ind.remove();},3000);var t=window.opener;if(t){t.postMessage({type:'HD_REFRESH',requests:all,total:totalCount},'*');}else{alert('Dashboard not found. Click Refresh from Help Desk on the dashboard first.');}}}).catch(function(e){ind.textContent='Error: '+e.message;setTimeout(function(){ind.remove();},5000);});}go(1);})();";
   var ov=document.getElementById('bm-overlay');
   if(!ov){
     ov=document.createElement('div');
