@@ -112,7 +112,11 @@ tr.ticket-row:hover td{background:#fafaf7;cursor:pointer}
 <div class="setup-modal" id="setupModal">
   <div class="setup-card">
     <h2>Setup - Help Desk Dashboard</h2>
-    <p>Enter your <strong>Anthropic API key</strong> for AI Q&amp;A and auto-refresh. Stored only in your browser — never sent to GitHub.</p>
+    <p style="font-size:12px;color:#555;font-weight:500;margin-bottom:4px">Shared AI Proxy URL (optional)</p>
+    <p style="font-size:12px;color:#888;margin-bottom:6px">Lets everyone use Ask AI without their own key. Set up a Cloudflare Worker using worker.js — paste the Worker URL here.</p>
+    <input type="text" id="proxyUrlInput" placeholder="https://your-worker.workers.dev"/>
+    <p style="font-size:12px;color:#555;font-weight:500;margin-bottom:4px">Anthropic API Key (your personal key)</p>
+    <p style="font-size:12px;color:#888;margin-bottom:6px">Only needed if not using the shared proxy above.</p>
     <input type="password" id="apiKeyInput" placeholder="sk-ant-..."/>
     <p style="font-size:12px;color:#555;font-weight:500;margin-bottom:4px">GitHub Token (for shared data)</p>
     <p style="font-size:12px;color:#888;margin-bottom:6px">Allows your refresh to update the dashboard for everyone. Create at github.com/settings/tokens — needs <strong>repo</strong> scope.</p>
@@ -237,6 +241,9 @@ var refreshTimer=null, countdownTimer=null, nextRefreshAt=null;
 var openDetailRow=null, totalTicketCount=2314;
 var HD='https://helpdesk.smalley.com';
 var GH_TOKEN='', GH_REPO='Ronb818/helpdesk-dashboard';
+var PROXY_URL='';
+// Default shared key — set a spending limit at console.anthropic.com to cap costs
+var DEFAULT_AI_KEY='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';
 
 var SEED=[
 {id:'69534',cat:'Request',subj:'Addition to PRD Environment - BOL Tracked Not Invoiced Email',req:'Keith Schaecher',asgn:'Marina Shulman',status:'Open',created:'Apr 8, 2026 11:17 AM',due:'-',pri:'Medium',desc:'',notes:[]},
@@ -601,6 +608,25 @@ function loadSharedData(callback){
     })
     .catch(function(){callback();});
 }
+// ── AI call helper — uses proxy if available, else personal key ───────────
+function callAI(payload){
+  var effectiveKey=apiKey||DEFAULT_AI_KEY;
+  if(PROXY_URL){
+    return fetch(PROXY_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    }).then(function(r){return r.json();});
+  } else if(effectiveKey){
+    return fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':effectiveKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify(payload)
+    }).then(function(r){return r.json();});
+  } else {
+    return Promise.reject(new Error('No AI key configured. Click \u2699 Settings to add an API key.'));
+  }
+}
 function startRefreshCycle(){
   clearInterval(refreshTimer); clearInterval(countdownTimer);
   if(!apiKey){
@@ -634,19 +660,15 @@ function changeInterval(val,el){
 }
 function manualRefresh(){clearTimeout(refreshTimer);clearInterval(countdownTimer);nextRefreshAt=null;document.getElementById('countdown').textContent='';doAIRefresh();}
 function doAIRefresh(){
-  if(!apiKey) return;
+  if(!apiKey&&!PROXY_URL&&!DEFAULT_AI_KEY) return;
   setBadge('refreshing');
   document.getElementById('refreshStatus').textContent='AI refreshing...';
   var prevIds=new Set(TICKETS.map(function(t){return t.id;}));
   var sys='You are a help desk data extractor for Smalley IT. Use Microsoft 365 to search for recent help desk ticket emails. Return ONLY a JSON array. Fields: id,subject,requester,assigned,status,priority,created,due,category. If nothing found return [].';
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:2000,system:sys,
-      messages:[{role:'user',content:'Search M365 for Smalley help desk tickets in the last '+intervalMin+' minutes. Return JSON.'}],
-      mcp_servers:[{type:'url',url:'https://microsoft365.mcp.claude.com/mcp',name:'microsoft365'}]
-    })
-  }).then(function(r){return r.json();})
-  .then(function(data){
+  callAI({model:'claude-haiku-4-5-20251001',max_tokens:2000,system:sys,
+    messages:[{role:'user',content:'Search M365 for Smalley help desk tickets in the last '+intervalMin+' minutes. Return JSON.'}],
+    mcp_servers:[{type:'url',url:'https://microsoft365.mcp.claude.com/mcp',name:'microsoft365'}]
+  }).then(function(data){
     var txt=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
     var match=txt.match(/\[[\s\S]*\]/);
     if(match){
@@ -680,13 +702,10 @@ function ask(q){
   msgs.innerHTML+='<div class="msg msg-u">'+esc(q)+'</div>';
   msgs.innerHTML+='<div class="msg msg-a" id="aiR"><span class="spinner"></span>Analyzing...</div>';
   msgs.scrollTop=msgs.scrollHeight;
-  if(!apiKey){document.getElementById('aiR').textContent='No API key — click Settings.';return;}
+  if(!apiKey&&!PROXY_URL&&!DEFAULT_AI_KEY){document.getElementById('aiR').textContent='No AI key configured — click \u2699 Settings.';return;}
   var slim=TICKETS.map(function(t){return{id:t.id,cat:t.cat,subj:t.subj,req:t.req,asgn:t.asgn,status:t.status,pri:t.pri,created:t.created,due:t.due,desc:(t.desc||'').substring(0,150),notes:(t.notes||[]).map(function(n){return n.by+': '+(n.text||'').substring(0,120);}).join(' | ')};});
   var sys='You are an IT help desk analyst for Smalley (Lake Zurich IL). '+TICKETS.length+' tickets of '+totalTicketCount+' total. Answer in 2-4 sentences max unless a list is needed. Data: '+JSON.stringify(slim);
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})
-  }).then(function(r){return r.json();})
+  callAI({model:'claude-haiku-4-5-20251001',max_tokens:600,system:sys,messages:[{role:'user',content:q}]})
   .then(function(d){document.getElementById('aiR').innerHTML=((d.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join(''))||'No response.';})
   .catch(function(e){document.getElementById('aiR').textContent='Error: '+e.message;})
   .finally(function(){msgs.scrollTop=msgs.scrollHeight;});
@@ -695,16 +714,19 @@ function ask(q){
 // ── Setup ──────────────────────────────────────────────────────────────────
 function openSetup(){document.getElementById('setupModal').style.display='flex';}
 function saveSetup(){
+  var px=document.getElementById('proxyUrlInput').value.trim();
   var k=document.getElementById('apiKeyInput').value.trim();
   var gh=document.getElementById('ghTokenInput').value.trim();
   var sel=document.querySelector('#intervalSelect .int-opt.active');
+  if(px){PROXY_URL=px;localStorage.setItem('hd_proxy_url',px);}
   if(k){apiKey=k;localStorage.setItem('hd_api_key',k);}
-  if(gh){GH_TOKEN=gh;localStorage.setItem('hd_gh_token',gh);}
+  if(gh){GH_TOKEN=gh;localStorage.setItem('hd_gh_token',gh);}https://github.com/Ronb818/helpdesk-dashboard/blob/main/index.html
   if(sel){intervalMin=parseInt(sel.dataset.val);localStorage.setItem('hd_interval',intervalMin);}
   document.getElementById('setupModal').style.display='none';
   startRefreshCycle();
-  if(k||gh) toast('Settings saved.'+(gh?' Shared data enabled.':''));
+  toast('Settings saved.'+(px?' Shared AI proxy active.':k?' Personal AI key active.':''));
 }
+// Patch in proxy/key saving after gh token block above
 function skipSetup(){document.getElementById('setupModal').style.display='none';startRefreshCycle();}
 document.querySelectorAll('#intervalSelect .int-opt').forEach(function(el){
   el.onclick=function(){
@@ -716,17 +738,19 @@ document.querySelectorAll('#intervalSelect .int-opt').forEach(function(el){
 // ── Init ───────────────────────────────────────────────────────────────────
 window.onload=function(){
   apiKey=localStorage.getItem('hd_api_key')||'';
+  PROXY_URL=localStorage.getItem('hd_proxy_url')||'';
   GH_TOKEN=localStorage.getItem('hd_gh_token')||'';
   intervalMin=parseInt(localStorage.getItem('hd_interval')||'15');
-  // Pre-fill settings inputs if keys exist
+  // Pre-fill settings inputs
   if(apiKey) document.getElementById('apiKeyInput').value=apiKey;
+  if(PROXY_URL) document.getElementById('proxyUrlInput').value=PROXY_URL;
   if(GH_TOKEN) document.getElementById('ghTokenInput').value=GH_TOKEN;
   var savedTotal=localStorage.getItem('hd_total_count');
   if(savedTotal) totalTicketCount=parseInt(savedTotal);
   document.querySelectorAll('.int-opt[data-val]').forEach(function(el){
     el.classList.toggle('active',parseInt(el.dataset.val)===intervalMin);
   });
-  if(apiKey||GH_TOKEN) document.getElementById('setupModal').style.display='none';
+  if(apiKey||PROXY_URL||GH_TOKEN) document.getElementById('setupModal').style.display='none';
   // Always try to load shared data from GitHub first, fall back to localStorage/seed
   loadSharedData(function(){
     if(!TICKETS.length){
