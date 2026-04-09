@@ -647,8 +647,7 @@ function loadNotes(id){
   var btn=document.getElementById('rb-'+id);
   if(area) area.innerHTML='<div style="font-size:12px;color:#888;padding:6px 0"><span class="spinner"></span>Loading notes...</div>';
   if(btn) btn.textContent='Loading...';
-  var noteListUrl=HD+'/api/v3/requests/'+id+'/notes?SUBREQUEST=XMLHTTP';
-  fetch(noteListUrl,{credentials:'include'})
+  fetch(HD+'/api/v3/requests/'+id+'/notes?SUBREQUEST=XMLHTTP',{credentials:'include'})
     .then(function(r){return r.json();})
     .then(function(d){
       var noteList=d.notes||[];
@@ -665,21 +664,37 @@ function loadNotes(id){
       })).then(function(details){
         var parsed=details.map(function(d){
           var n=d.note||{};
-          return{by:(n.added_by&&n.added_by.name)||'Unknown',time:(n.added_time&&n.added_time.display_value)||'',text:n.description?stripHtml(n.description).trim():'(no text)'};
+          // Strip zero-width spaces and other invisible chars from note text
+          var rawText=n.description?stripHtml(n.description).replace(/[\u200B-\u200D\uFEFF]/g,'').trim():'(no text)';
+          return{
+            by:(n.added_by&&n.added_by.name)||'Unknown',
+            time:(n.added_time&&n.added_time.display_value)||'',
+            text:rawText
+          };
         });
+        // Fetch ticket description too
         return fetch(HD+'/api/v3/requests/'+id+'?SUBREQUEST=XMLHTTP',{credentials:'include'})
           .then(function(r){return r.json();}).catch(function(){return {};})
           .then(function(td){
-            var desc=td.request?stripHtml(td.request.description||'').trim():'';
+            var desc=td.request?stripHtml(td.request.description||'').replace(/[\u200B-\u200D\uFEFF]/g,'').trim():'';
+            // Update ticket in memory
             var tix=TICKETS.find(function(t){return t.id===id;});
-            if(tix){tix.notes=parsed;tix.desc=desc;localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));}
+            if(tix){tix.notes=parsed;tix.desc=desc;}
+            // Save to localStorage safely
+            try{localStorage.setItem('hd_tickets',JSON.stringify(TICKETS));}catch(e){console.warn('localStorage full, skipping save');}
+            // Update DOM directly — no renderTix() to avoid collapsing the expanded row
             if(area) area.innerHTML=renderNotes({notes:parsed},searchQuery);
             var descEl=document.getElementById('desc-'+id);
             if(descEl) descEl.innerHTML=desc?highlight(desc,searchQuery):'<span style="color:#aaa;font-style:italic">No description.</span>';
             var nc=document.getElementById('nc-'+id);
             if(nc) nc.textContent='('+parsed.length+')';
             if(btn) btn.textContent='↻ Reload';
-            renderTix();
+            // Update just the notes snippet cell in the table row (not full re-render)
+            var snippetCell=document.querySelector('tr.ticket-row[onclick*="\''+id+'\'"] td:nth-child(8)');
+            if(snippetCell&&parsed.length){
+              var snippet=parsed[0].text.substring(0,55)+'...';
+              snippetCell.innerHTML='<span class="t-notes-snippet" title="'+esc(snippet)+'">'+highlight(snippet,searchQuery)+'</span>';
+            }
             toast('Loaded '+parsed.length+' note'+(parsed.length!==1?'s':'')+' for #'+id);
           });
       });
